@@ -61,6 +61,9 @@ public:
     void buildBoundary();
     // Compute the vertex normals for every face and vertex of the mesh.
     void computeNormals();
+    // Reduce the edgeTable to boundaryEdgeTable. Only called when 
+    // just finished constructing mesh.
+    void findBoundaryEdgeTable();
 };
 
 Mesh::Mesh(){
@@ -314,7 +317,7 @@ void Mesh::addPolygonFace(vector<Vertex*> vertices, bool reverseOrder = false) {
     faceList.push_back(newFace);
 }
 
-// Build the next pointers on boundary of the mesh.
+// Build the next pointers for boundary edges in the mesh.
 // @param mesh: refer to the mesh to build connection in.
 // This one takes O(E) time.
 void Mesh::buildBoundary() {
@@ -529,4 +532,41 @@ void Mesh::drawMesh() {
     }
 }
 
+void Mesh::findBoundaryEdgeTable() {
+    unordered_map<Vertex*, vector<Edge*> >::iterator esIt;
+    unordered_map<Vertex*, vector<Edge*> > boundaryEdgeTable;
+    for(esIt = edgeTable.begin(); esIt != edgeTable.end(); esIt++) {
+        vector<Edge*> edges = esIt -> second;
+        vector<Edge*>::iterator eIt;
+        vector<Edge*> newEdges;
+        for(eIt = edges.begin(); eIt < edges.end(); eIt ++) {
+            if((*eIt) -> fb == NULL) {
+                newEdges.push_back(*eIt);
+            }
+        }
+        if(!newEdges.empty()) {
+            boundaryEdgeTable[esIt -> first] = newEdges;
+        }
+    }
+    /*
+    for(esIt = boundaryEdgeTable.begin(); esIt != boundaryEdgeTable.end(); esIt++) {
+        cout<<"Current vertex ID: ";
+        cout<<esIt -> first -> ID<<endl;
+        vector<Edge*> edges = esIt -> second;
+        vector<Edge*>::iterator eIt;
+        //vector<Edge*> newEdges = new vector<Edge*>;
+        for(eIt = edges.begin(); eIt < edges.end(); eIt ++) {
+        cout<<"Current edge vertex a ID: ";
+        cout<<(*eIt) -> va -> ID<<endl;
+        cout<<"Current edge vertex b ID: ";
+        cout<<(*eIt) -> vb -> ID<<endl;
+            if((*eIt) -> fb != NULL) {
+                cout<<"CHECK here!"<<endl;
+            }
+
+        }
+    }
+    */
+    edgeTable = boundaryEdgeTable;
+}
 #endif // __MESH_H__

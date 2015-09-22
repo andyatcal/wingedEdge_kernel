@@ -783,6 +783,7 @@ void makeWithSIF(Mesh &mesh, string inputSIF){
         }
     }
     mesh.buildBoundary();
+    mesh.findBoundaryEdgeTable();
 }
 
 #endif // __MAKEMESH_H__

@@ -41,6 +41,7 @@
 #include "face.h"
 
 #include "mesh.h"
+#include "merge.h"
 #include "makeMesh.h"
 #include "subdivision.h"
 #include "viewport.h"
