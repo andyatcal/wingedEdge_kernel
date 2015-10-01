@@ -61,9 +61,8 @@ public:
     void buildBoundary();
     // Compute the vertex normals for every face and vertex of the mesh.
     void computeNormals();
-    // Reduce the edgeTable to boundaryEdgeTable. Only called when 
-    // just finished constructing mesh.
-    void findBoundaryEdgeTable();
+    // Return the list of edges on the boarders
+    vector<Edge*> boundaryEdgeList();
 };
 
 Mesh::Mesh(){
@@ -358,7 +357,7 @@ void Mesh::buildBoundary() {
 // @param p1, p2, p3 are positions of three vertices,
 // with edge p1 -> p2 and edge p2 -> p3.
 vec3 getNormal3Vertex(vec3 p1, vec3 p2, vec3 p3){
-    return normalize(cross(p2 - p1, p3 - p2));
+    return cross(p2 - p1, p3 - p2);
 }
 
 // Get the surface normal. 
@@ -532,41 +531,22 @@ void Mesh::drawMesh() {
     }
 }
 
-void Mesh::findBoundaryEdgeTable() {
-    unordered_map<Vertex*, vector<Edge*> >::iterator esIt;
-    unordered_map<Vertex*, vector<Edge*> > boundaryEdgeTable;
-    for(esIt = edgeTable.begin(); esIt != edgeTable.end(); esIt++) {
-        vector<Edge*> edges = esIt -> second;
+vector<Edge*> Mesh::boundaryEdgeList() {
+    vector<Edge*> boundaryEdgeList;
+    unordered_map<Vertex*, vector<Edge*> >::iterator vIt;
+    //cout<<"Edge table size: "<<edgeTable.size()<<endl;
+    for(vIt = edgeTable.begin(); vIt != edgeTable.end(); vIt++) {
+        //cout<<vIt -> first -> ID<<endl;
+        vector<Edge*> edges = vIt -> second;
         vector<Edge*>::iterator eIt;
         vector<Edge*> newEdges;
         for(eIt = edges.begin(); eIt < edges.end(); eIt ++) {
             if((*eIt) -> fb == NULL) {
-                newEdges.push_back(*eIt);
+                boundaryEdgeList.push_back(*eIt);
             }
         }
-        if(!newEdges.empty()) {
-            boundaryEdgeTable[esIt -> first] = newEdges;
-        }
     }
-    /*
-    for(esIt = boundaryEdgeTable.begin(); esIt != boundaryEdgeTable.end(); esIt++) {
-        cout<<"Current vertex ID: ";
-        cout<<esIt -> first -> ID<<endl;
-        vector<Edge*> edges = esIt -> second;
-        vector<Edge*>::iterator eIt;
-        //vector<Edge*> newEdges = new vector<Edge*>;
-        for(eIt = edges.begin(); eIt < edges.end(); eIt ++) {
-        cout<<"Current edge vertex a ID: ";
-        cout<<(*eIt) -> va -> ID<<endl;
-        cout<<"Current edge vertex b ID: ";
-        cout<<(*eIt) -> vb -> ID<<endl;
-            if((*eIt) -> fb != NULL) {
-                cout<<"CHECK here!"<<endl;
-            }
-
-        }
-    }
-    */
-    edgeTable = boundaryEdgeTable;
+    //cout<<"size: " << boundaryEdgeList.size()<<endl;
+    return boundaryEdgeList;
 }
 #endif // __MESH_H__

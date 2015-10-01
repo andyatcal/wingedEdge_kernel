@@ -43,6 +43,99 @@ void makeSquare(Mesh &mesh) {
     mesh.buildBoundary();
 }
 
+Mesh mergeTwoMeshes1() {
+    //make new mesh
+    Mesh mesh1;
+    Mesh mesh2;
+    Vertex * v1 = new Vertex;
+    Vertex * v2 = new Vertex;
+    Vertex * v3 = new Vertex;
+    Vertex * v4 = new Vertex;
+
+    Vertex * v5 = new Vertex;
+    Vertex * v6 = new Vertex;
+    Vertex * v7 = new Vertex;
+    Vertex * v8 = new Vertex;
+    
+    Vertex * v9 = new Vertex;
+    Vertex * v10 = new Vertex;
+
+    Vertex * v11 = new Vertex;
+    Vertex * v12 = new Vertex;
+
+    v1 -> position = vec3(1, 1, 0);
+    v2 -> position = vec3(-1, 1, 0);
+    v3 -> position = vec3(-1, 0, 0);
+    v4 -> position = vec3(1, 0, 0);
+
+    v5 -> position = vec3(1, 0, 0);
+    v6 -> position = vec3(-1, 0, 0);
+    v7 -> position = vec3(-1, -1, 0);
+    v8 -> position = vec3(1, -1, 0);
+    
+    v9 -> position = vec3(0.5, 0, 0);
+    v10 -> position = vec3(0.5, 0, 0);
+    v11 -> position = vec3(-0.5, 0, 0);
+    v12 -> position = vec3(-0.5, 0, 0);
+    
+    v1 -> ID = 1;
+    v2 -> ID = 2;
+    v3 -> ID = 3;
+    v4 -> ID = 4;
+
+    v5 -> ID = 5;
+    v6 -> ID = 6;
+    v7 -> ID = 7;
+    v8 -> ID = 8;
+    
+    v9 -> ID = 9;
+    v10 -> ID = 10;
+
+    v11 -> ID = 11;
+    v12 -> ID = 12;
+    
+    mesh1.addVertex(v1);
+    //mesh1.addVertex(v2);
+    mesh1.addVertex(v3);
+    mesh1.addVertex(v4);
+
+    mesh2.addVertex(v5);
+    mesh2.addVertex(v6);
+    mesh2.addVertex(v7);
+    mesh2.addVertex(v8);
+    mesh1.addVertex(v9);
+    mesh2.addVertex(v10);
+    mesh1.addVertex(v11);
+    mesh2.addVertex(v12);
+    vector<Vertex*> topFace;
+    vector<Vertex*> bottomFace;
+    
+    topFace.push_back(v1);
+    //topFace.push_back(v2);
+    topFace.push_back(v3);
+    topFace.push_back(v9);
+    topFace.push_back(v11);
+    topFace.push_back(v4);
+
+    bottomFace.push_back(v5);
+    bottomFace.push_back(v12);
+    bottomFace.push_back(v10);
+    bottomFace.push_back(v6);
+    bottomFace.push_back(v7);
+    bottomFace.push_back(v8);
+
+    mesh1.addPolygonFace(topFace, true);
+    mesh2.addPolygonFace(bottomFace, true);
+    mesh1.buildBoundary();
+    mesh2.buildBoundary();
+
+    //mesh1.addQuadFace(v1, v2, v3, v4);
+    //mesh2.addQuadFace(v5, v6, v7, v8);
+    Merge merger;
+    return merger.merge(mesh1, mesh2);
+    //return mesh1;
+}
+
 void makePyramid(Mesh &mesh){
     //make new mesh
     mesh.vertList.clear();
@@ -783,7 +876,6 @@ void makeWithSIF(Mesh &mesh, string inputSIF){
         }
     }
     mesh.buildBoundary();
-    mesh.findBoundaryEdgeTable();
 }
 
 #endif // __MAKEMESH_H__

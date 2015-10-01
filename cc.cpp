@@ -115,15 +115,16 @@ void init(int level){
     //makeOctahedron(glMesh);
     //makeSharpOctahedron(glMesh);
     //makeNormalStrip(glMesh);
-    makeMobius(glMesh);
+    //makeMobius(glMesh);
     //makeCircleSweep(glMesh);
     //glMesh.computeNormals();
+    glMesh = mergeTwoMeshes1();
     Subdivision myCC(glMesh);
     glMesh = myCC.ccSubdivision(level);
     glMesh.computeNormals();
     Offset offset(glMesh, 0.1);
     vector<Mesh> meshes;
-    bool full = false;
+    bool full = true;
     if(full) {
         offset.makeFullOffset();
         glOffMesh = offset.offsetMesh;
@@ -149,6 +150,7 @@ void init(int level, string inputSIF){
     Subdivision myCC(glMesh);
     glMesh = myCC.ccSubdivision(level);
     glMesh.computeNormals();
+    /*
     Offset offset(glMesh, 0.0015);
     vector<Mesh> meshes;
     bool full = true;
@@ -169,6 +171,7 @@ void init(int level, string inputSIF){
     }
     STL stl;
     stl.STLOutput(meshes, "debug/STL/Example.stl");
+    */
 }
 
 //************************************************************
@@ -287,10 +290,10 @@ void render(void) {
     gluLookAt(0, 0, cameraDistance, 0, 0, 0, 0, 1, 0);
 
     glMultMatrixf(&glMesh.object2world[0][0]);
-/*
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, YELLOW);
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, RED);
     glMesh.drawMesh();
-*/
+
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, GREEN);
     glPosMesh.drawMesh();
    
