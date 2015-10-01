@@ -208,10 +208,10 @@ void initMerge(int level, string inputSIF1, string inputSIF2, string inputSIF3){
         meshes.push_back(glNegMesh);
         meshes.push_back(glSideMesh);
     }
-    /*
+    
     STL stl;
     stl.STLOutput(meshes, "debug/STL/Example.stl");
-    */
+    
 }
 
 //************************************************************
