@@ -77,6 +77,9 @@ Mesh glNegMesh;
 Mesh glSideMesh;
 Mesh glOffMesh;
 
+Mesh glMesh1;
+Mesh glMesh2;
+Mesh glMesh3;
 
 // ArcBall feature.
 int last_mx = 0, last_my = 0, cur_mx = 0, cur_my = 0;
@@ -150,7 +153,7 @@ void init(int level, string inputSIF){
     Subdivision myCC(glMesh);
     glMesh = myCC.ccSubdivision(level);
     glMesh.computeNormals();
-    /*
+    
     Offset offset(glMesh, 0.0015);
     vector<Mesh> meshes;
     bool full = true;
@@ -169,6 +172,43 @@ void init(int level, string inputSIF){
         meshes.push_back(glNegMesh);
         meshes.push_back(glSideMesh);
     }
+    
+    STL stl;
+    stl.STLOutput(meshes, "debug/STL/Example.stl");
+    
+}
+
+void initMerge(int level, string inputSIF1, string inputSIF2, string inputSIF3){
+    makeWithSIF(glMesh1, inputSIF1);
+    makeWithSIF(glMesh2, inputSIF2);
+    makeWithSIF(glMesh3, inputSIF3);
+    Mesh glMesh12;
+    Merge merger;
+    glMesh12 = merger.merge(glMesh1, glMesh2);
+    glMesh = merger.merge(glMesh12, glMesh3);
+    Subdivision myCC(glMesh);
+    glMesh = myCC.ccSubdivision(level);
+    glMesh.computeNormals();
+    
+    Offset offset(glMesh, 0.0015);
+    vector<Mesh> meshes;
+    bool full = true;
+    if(full) {
+        offset.makeFullOffset();
+        glOffMesh = offset.offsetMesh;
+        Subdivision myOffCC(glOffMesh);
+        glOffMesh = myOffCC.ccSubdivision(0);
+        meshes.push_back(glOffMesh);
+    } else {
+        offset.makeSeperateOffset();
+        glPosMesh = offset.posOffsetMesh;
+        glNegMesh = offset.negOffsetMesh;
+        glSideMesh = offset.sideOffsetMesh;
+        meshes.push_back(glPosMesh);
+        meshes.push_back(glNegMesh);
+        meshes.push_back(glSideMesh);
+    }
+    /*
     STL stl;
     stl.STLOutput(meshes, "debug/STL/Example.stl");
     */
@@ -418,7 +458,10 @@ int main(int argc, char** argv) {
     //Process the command line arguments
     int level;
     string inputSIF;
-    if(argc == 1 || argc > 3){
+    string inputSIF1;
+    string inputSIF2;
+    string inputSIF3;
+    if(argc == 1 || argc > 5){
         cout<<"USAGE: ./NAME_OF_PROGRAM LEVEL_OF_SUBDIVISION INPUT_SIF_FILE.";
         exit(1);
     } else if(argc == 2){
@@ -428,6 +471,12 @@ int main(int argc, char** argv) {
         level = stoi(argv[1]);
         inputSIF = argv[2];
         init(level, inputSIF);
+    } else if(argc == 5){
+        level = stoi(argv[1]);
+        inputSIF1 = argv[2];
+        inputSIF2 = argv[3];
+        inputSIF3 = argv[4];
+        initMerge(level, inputSIF1, inputSIF2, inputSIF3);
     }
 
     glutInitWindowSize(viewport.width, viewport.height);
