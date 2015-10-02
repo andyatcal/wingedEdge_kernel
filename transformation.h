@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <glm/gtc/matrix_transform.hpp>
 
 using namespace std;
 using namespace glm;
@@ -20,8 +21,8 @@ class Transformation{
 public:
     // Create a new Mesh given the transformation matrix
     // @param matrix, the mesh of self-merege
-    Mesh transform(Mesh & mesh);
-    // Merge any possible boundary edges that are close for two meshes.
+    Mesh transform(mat4 matrix);
+    // Scale X, Y, Z coordiates
     // @param mesh1, mesh2. The two meshes to be merged.
     // Return a new mesh that contains the merged mesh.
     Mesh merge(Mesh & mesh1, Mesh & mesh2);

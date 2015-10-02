@@ -42,6 +42,7 @@
 
 #include "mesh.h"
 #include "merge.h"
+#include "transformation.h"
 #include "makeMesh.h"
 #include "subdivision.h"
 #include "viewport.h"
@@ -183,9 +184,8 @@ void initMerge(int level, string inputSIF1, string inputSIF2, string inputSIF3){
     makeWithSIF(glMesh2, inputSIF2);
     makeWithSIF(glMesh3, inputSIF3);
     Mesh glMesh12;
-    Merge merger;
-    glMesh12 = merger.merge(glMesh1, glMesh2);
-    glMesh = merger.merge(glMesh12, glMesh3);
+    glMesh12 = merge(glMesh1, glMesh2);
+    glMesh = merge(glMesh12, glMesh3);
     Subdivision myCC(glMesh);
     glMesh = myCC.ccSubdivision(level);
     glMesh.computeNormals();
