@@ -17,6 +17,7 @@ using namespace glm;
 //////////////////////////////////////////////////////////////////////
 // Merge Class -- A merge class contains fuctions to merge meshes.
 
+// Return true if two vertices are very close to each other.
 bool vertexMatch(Vertex * v1, Vertex * v2) {
     float epsilon = 0.001;
     //cout<<"Now matching v1 "<<v1 -> ID<< " and v2 "<< v2 -> ID<<endl;
@@ -29,6 +30,9 @@ bool vertexMatch(Vertex * v1, Vertex * v2) {
     return false;
 }
 
+// Merge any possible boundary edges that are close for two meshes.
+// @param mesh1, mesh2. The two meshes to be merged.
+// Return a new mesh that contains the merged mesh.
 Mesh merge(Mesh & mesh1, Mesh & mesh2) {
     unordered_map<Vertex*, Vertex*> replacingMap;
     unordered_map<Vertex*, Vertex*>::iterator mIt;
@@ -129,12 +133,18 @@ Mesh merge(Mesh & mesh1, Mesh & mesh2) {
     return mergedMesh;
 }
 
+// Merge any possible boundary edges that are close for multiple meshes.
+// @param meshes. The list of meshes to be merged.
+// All facets and vertices of mesh2 will be added to mesh1.
+// Return a new mesh that contains the merged mesh.
 Mesh merge(vector<Mesh*> &meshes) {
     unordered_map<Vertex*, Vertex*> replacingMap;
     Mesh mergedMesh;
     return mergedMesh;
 }
 
+// Merge any possible boundary edges that are close for one mesh.
+// @param mesh, the mesh of self-merege
 Mesh merge(Mesh & mesh) {
     unordered_map<Vertex*, Vertex*> replacingMap;
     unordered_map<Vertex*, Vertex*>::iterator mIt;

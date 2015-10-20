@@ -42,7 +42,7 @@
 
 #include "mesh.h"
 #include "merge.h"
-#include "transformation.h"
+
 #include "makeMesh.h"
 #include "subdivision.h"
 #include "viewport.h"
@@ -113,7 +113,7 @@ void init(int level, string inputSIF);
 void init(int level){
     //makeSquare(glMesh);
     //makePyramid(glMesh);
-    //makeCube(glMesh);
+    makeCube(glMesh, 1, 0.7, 0.85);
     //makeOpenCube(glMesh);
     //makeRing(glMesh);
     //makeOctahedron(glMesh);
@@ -122,7 +122,7 @@ void init(int level){
     //makeMobius(glMesh);
     //makeCircleSweep(glMesh);
     //glMesh.computeNormals();
-    glMesh = mergeTwoMeshes1();
+    //glMesh = mergeTwoMeshes1();
     Subdivision myCC(glMesh);
     glMesh = myCC.ccSubdivision(level);
     glMesh.computeNormals();
@@ -263,16 +263,16 @@ void initRendering(){
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
 
-    GLfloat light_ambient0[] = { 0.0, 0.0, 0.0, 10.0 };
+    GLfloat light_ambient0[] = { 0.8, 0.8, 0.8, 10.0 };
     GLfloat light_diffuse0[] = { 1.0, 1.0, 1.0, 10.0 };
     GLfloat light_specular0[] = { 1.0, 1.0, 1.0, 10.0 };
-    GLfloat light_position0[] = { 0, 0, 1, 0.0 };
+    GLfloat light_position0[] = { 1, 1, 1, 0.0 };
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient0);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse0);
     glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular0);
     glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
-
+/*
     glEnable(GL_LIGHT1);
 
     GLfloat light_ambient1[] = { 0.0, 0.0, 0.0, 1.0 };
@@ -314,9 +314,9 @@ void initRendering(){
     //glMaterialfv(GL_FRONT, GL_SPECULAR, white);
     //GLfloat shininess[] = {50};
     //glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
-
+*/
     transforms[MODE_CAMERA] = lookAt(
-        vec3(0.0,  0.0, 4.0),   // eye
+        vec3(0.0,  0.0, 10.0),   // eye
         vec3(0.0,  0.0, 0.0),   // direction
         vec3(0.0,  1.0, 0.0));  // up
 }
@@ -333,7 +333,7 @@ void render(void) {
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, RED);
     glMesh.drawMesh();
-
+/*
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, GREEN);
     glPosMesh.drawMesh();
    
@@ -345,7 +345,7 @@ void render(void) {
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, BLUE);
     glOffMesh.drawMesh();
-
+*/
     glutSwapBuffers();
 
 }

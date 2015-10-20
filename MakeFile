@@ -1,0 +1,1 @@
+g++ cc.cpp -framework OpenGL -framework GLUT -o debug/cc -Wno-deprecated-declarations -Wno-unknown-escape-sequence
