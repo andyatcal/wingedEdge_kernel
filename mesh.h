@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include "glm/glm.hpp"
 
 using namespace std;
 using namespace glm;

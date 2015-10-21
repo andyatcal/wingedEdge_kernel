@@ -1,1 +1,6 @@
-g++ cc.cpp -framework OpenGL -framework GLUT -o debug/cc -Wno-deprecated-declarations -Wno-unknown-escape-sequence
+CC = g++
+
+CFLAGS = -framework OpenGL -framework GLUT -Wno-deprecated-declarations -Wno-unknown-escape-sequence
+
+all: cc.o
+	$(CC) $(CFLAGS) cc.cpp

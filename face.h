@@ -8,7 +8,7 @@
 #ifndef __FACE_H__
 #define __FACE_H__
 
-#include <glm/glm.hpp>
+#include "glm/glm.hpp"
 #include <vector>
 
 using namespace glm;

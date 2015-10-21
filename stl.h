@@ -8,7 +8,6 @@
 #ifndef __STL_H__
 #define __STL_H__
 
-#include <glm/glm.hpp>
 #include <vector>
 #include <iomanip>
 

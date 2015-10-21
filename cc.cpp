@@ -26,9 +26,9 @@
 
 #include <math.h>
 #include <vector>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 #include <iostream>
 #include <fstream>
 #include <regex>
@@ -113,7 +113,7 @@ void init(int level, string inputSIF);
 void init(int level){
     //makeSquare(glMesh);
     //makePyramid(glMesh);
-    makeCube(glMesh, 1, 0.7, 0.85);
+    makeCube(glMesh, 1, 1, 1);
     //makeOpenCube(glMesh);
     //makeRing(glMesh);
     //makeOctahedron(glMesh);

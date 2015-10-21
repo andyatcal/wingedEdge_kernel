@@ -8,7 +8,6 @@
 #ifndef __OFFSET_H__
 #define __OFFSET_H__
 
-#include <glm/glm.hpp>
 #include <vector>
 
 using namespace glm;

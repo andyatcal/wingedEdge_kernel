@@ -8,8 +8,6 @@
 #ifndef __SUBDIVISION_H__
 #define __SUBDIVISION_H__
 
-#include <glm/glm.hpp>
-
 using namespace glm;
 using namespace std;
 

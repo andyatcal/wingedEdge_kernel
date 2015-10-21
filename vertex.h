@@ -8,7 +8,7 @@
 #ifndef __VERTEX_H__
 #define __VERTEX_H__
 
-#include <glm/glm.hpp>
+#include "glm/glm.hpp"
 
 using namespace glm;
 using namespace std;

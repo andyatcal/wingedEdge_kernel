@@ -1,0 +1,4 @@
+class MyGLWindow : public QGLWIDGET
+{
+
+};

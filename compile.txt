@@ -1,0 +1,3 @@
+g++ cc.cpp -framework OpenGL -framework GLUT -o debug/cc -Wno-deprecated-declarations -Wno-unknown-escape-sequence
+
+g++ -I /Library/Frameworks/QtGui.framework/Versions/4/Headers     -o example example.cpp      -framework QtGui -framework QtCore
