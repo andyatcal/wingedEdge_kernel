@@ -1,10 +1,11 @@
 #include <QApplication>
 #include <QPushButton>
-#include "model.h"
+#include "mymodel.h"
 #include "MyGLWindow.h"
 #include "MyGLWindow.cpp"
 #include "MyWidget.h"
 #include "MyWidget.cpp"
+
  int main(int argc, char *argv[])
  {
     QApplication app(argc, argv);
