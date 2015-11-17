@@ -1116,21 +1116,22 @@ void makeWithQuadSIF(Mesh &mesh, string inputSIF){
             a += IDplusBecauseOfShells;
             b += IDplusBecauseOfShells;
             c += IDplusBecauseOfShells;
-            //cout<<"a: "<< a <<" b: "<<b<<" c: "<<c<<endl;
+            cout<<"a: "<< a <<" b: "<<b<<" c: "<<c<<endl;
             a = mapBeforeMergeToAfter[a];
             b = mapBeforeMergeToAfter[b];
             c = mapBeforeMergeToAfter[c];
+            cout<<"a: "<< a <<" b: "<<b<<" c: "<<c<<endl;
             if(tCounter % 2 == 0) {
                 va = mesh.vertList[a];
                 vb = mesh.vertList[b];
                 vc = mesh.vertList[c];
             } else {
                 vd = mesh.vertList[c];
+                cout<<va -> ID<<" "<<vb -> ID<<" "<<vc -> ID<<" "<<vd -> ID<<endl;
                 mesh.addQuadFace(va, vb, vc, vd);
             }
             tCounter += 1;
             //cout<<va -> ID<<" "<<vb -> ID<<" "<<vc -> ID<<endl;
-            mesh.addTriFace(va, vb, vc);
         } else if(regex_match(nextLine, lRegex)){
             vector<int> oneBoundary;
             string temp;

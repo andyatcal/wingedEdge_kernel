@@ -150,7 +150,8 @@ void init(int level){
 }
 
 void init(int level, string inputSIF){
-    makeWithSIF(glMesh, inputSIF);
+    //makeWithSIF(glMesh, inputSIF);
+    makeWithQuadSIF(glMesh, inputSIF);
     Subdivision myCC(glMesh);
     glMesh = myCC.ccSubdivision(level);
     glMesh.computeNormals();
