@@ -167,6 +167,7 @@ void Mesh::addTriFace(Vertex * v1, Vertex * v2, Vertex * v3) {
     e23 -> setNextEdge(v3, newFace, e31);
     e31 -> setNextEdge(v1, newFace, e12);
     e31 -> setNextEdge(v3, newFace, e23);
+    newFace -> id = faceList.size();
     faceList.push_back(newFace);
 }
 
@@ -221,6 +222,7 @@ void Mesh::addQuadFace(Vertex * v1, Vertex * v2, Vertex * v3, Vertex * v4) {
     e34 -> setNextEdge(v4, newFace, e41);
     e41 -> setNextEdge(v4, newFace, e34);
     e41 -> setNextEdge(v1, newFace, e12);
+    newFace -> id = faceList.size();
     faceList.push_back(newFace);
 }
 
@@ -314,6 +316,7 @@ void Mesh::addPolygonFace(vector<Vertex*> vertices, bool reverseOrder = false) {
             }
         }
     }
+    newFace -> id = faceList.size();
     faceList.push_back(newFace);
 }
 
@@ -480,6 +483,10 @@ void Mesh::drawMesh() {
         Vertex * tempv;
         Edge * firstEdge = (*fIt) -> oneEdge;
         //cout<<"New Face: "<<endl;
+        glLoadName(tempFace -> id);
+        if(tempFace -> selected) {
+            glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, PURPLE);
+        }
         glBegin(GL_POLYGON);
         Edge * currEdge = firstEdge;
         Edge * nextEdge;
@@ -529,6 +536,7 @@ void Mesh::drawMesh() {
             //cout<<"Current Vertex ID: "<<tempv -> ID<<endl;
         } while(currEdge != firstEdge);
         glEnd();
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, CYAN);
     }
 }
 

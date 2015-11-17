@@ -1,3 +1,4 @@
+
 // 
 // @author Andy Wang, UC Berkeley. Copyright 2015 reserve.
 // Catmull-Clark subdivision project in order to create sculptures like Eva-Hilds.
@@ -993,6 +994,141 @@ void makeWithSIFWithMerge(Mesh &mesh, string inputSIF){
             Vertex * va = mesh.vertList[a];
             Vertex * vb = mesh.vertList[b];
             Vertex * vc = mesh.vertList[c];
+            //cout<<va -> ID<<" "<<vb -> ID<<" "<<vc -> ID<<endl;
+            mesh.addTriFace(va, vb, vc);
+        } else if(regex_match(nextLine, lRegex)){
+            vector<int> oneBoundary;
+            string temp;
+            int nextVert;
+            if(shellNum > 1) {
+                vector<int>::iterator vertNumIt;
+                IDplusBecauseOfShells = 0;
+                for(vertNumIt = numberOfVerticesInShells.begin();
+                 vertNumIt < numberOfVerticesInShells.end(); vertNumIt ++) {
+                    IDplusBecauseOfShells += *vertNumIt;
+                }
+            }
+            temp = nextLine.substr(nextLine.find("\("),
+             nextLine.find("\)") - nextLine.find("\("));
+            //cout<<temp<<endl;
+            temp = temp.substr(temp.find(" ") + 1);
+            while(temp.find(" ") != string::npos){
+                nextVert = stoi(temp.substr(0, temp.find(" ")));
+                oneBoundary.push_back(nextVert + IDplusBecauseOfShells);
+                temp = temp.substr(temp.find(" ") + 1);
+            }
+            nextVert = stoi(temp);
+            oneBoundary.push_back(nextVert + IDplusBecauseOfShells);
+            boundaries.push_back(oneBoundary);
+            //cout<<oneBoundary.size()<<endl;          
+        } else if(regex_match(nextLine, shRegex)) {
+            shellNum += 1;
+        } else if(regex_match(nextLine, verticesRegex)){
+            string temp;
+            temp = nextLine.substr(nextLine.find("\("),
+             nextLine.find("\)") - nextLine.find("\("));
+            temp = temp.substr(temp.find(" ") + 1);
+            int numberOfVerticesInThisShell = stoi(temp);
+            numberOfVerticesInShells.push_back(numberOfVerticesInThisShell);
+        }
+    }
+    mesh.buildBoundary();
+}
+
+void makeWithQuadSIF(Mesh &mesh, string inputSIF){
+    mesh.vertList.clear();
+    mesh.edgeTable.clear();
+    mesh.faceList.clear();
+    ifstream file(inputSIF);
+    if (!file.good()) {
+        cout<<"THE PATH OF SIF FILE IS NOT VAILD.";
+        exit(1); // exit if file not found
+    }
+    string nextLine;
+    regex anyR(".*(.*).*");
+    regex vRegex(".*\(v .*$\).*");
+    regex tRegex(".*\(t .*\).*");
+    regex lRegex(".*\(loop .*\).*");
+    regex shRegex(".*\\(shell.*\).*");
+    regex verticesRegex(".*\\(vertices .*\).*");
+    int vBeforeMergeCounter = 0;
+    int vAfterMergeCounter = 0;
+    int IDplusBecauseOfShells = 0;
+    vector<vector<int> > boundaries;
+    unordered_map<int, int> mapBeforeMergeToAfter;
+    int shellNum = 0;
+    vector<int> numberOfVerticesInShells;
+    int tCounter = 0;
+    Vertex * va;
+    Vertex * vb;
+    Vertex * vc;
+    Vertex * vd;
+    while(getline(file, nextLine)){
+        nextLine.pop_back();
+        if(regex_match(nextLine, vRegex)){
+            string temp;
+            temp = nextLine.substr(nextLine.find("\("), nextLine.find("\)") - nextLine.find("\("));
+            temp = temp.substr(temp.find(" ") + 1);
+            float x = stof(temp.substr(0, temp.find(" ")));
+            temp = temp.substr(temp.find(" ") + 1);
+            float y = stof(temp.substr(0, temp.find(" ")));
+            temp = temp.substr(temp.find(" ") + 1);
+            float z = stof(temp);
+            Vertex * newVert = new Vertex;
+            newVert -> position = vec3(x, y, z) * 1.0f; // Can be modifed here to zoom in.
+            newVert -> ID = vAfterMergeCounter;
+            vector<Vertex*>::iterator vIt;
+            bool alreadyAdded = false;
+            for (vIt = mesh.vertList.begin(); vIt < mesh.vertList.end(); vIt ++) {
+                if(distance(newVert -> position, (*vIt) -> position) < 0.001 ){
+                    //cout << "The distance between vertex "<<newVert -> ID<<" and vertex "<<vIt -> second -> ID<<" is: "<<endl;
+                    //cout << newVert -> position - (*vIt) -> position<<endl;
+                    alreadyAdded = true;
+                    mapBeforeMergeToAfter[vBeforeMergeCounter] = (*vIt) -> ID;
+                    break;
+                }
+            }
+            if(!alreadyAdded) {
+                newVert -> ID = vAfterMergeCounter;
+                mesh.addVertex(newVert);
+                mapBeforeMergeToAfter[vBeforeMergeCounter] = vAfterMergeCounter;
+                vAfterMergeCounter += 1;
+            }
+            vBeforeMergeCounter += 1;
+        } else if(regex_match(nextLine, tRegex)) {
+            string temp;
+            temp = nextLine.substr(nextLine.find("\("), nextLine.find("\)") - nextLine.find("\("));
+            //cout<<temp<<endl;
+            temp = temp.substr(temp.find(" ") + 1);
+            int a = stoi(temp.substr(0, temp.find(" ")));
+            temp = temp.substr(temp.find(" ") + 1);
+            int b = stoi(temp.substr(0, temp.find(" ")));
+            temp = temp.substr(temp.find(" ") + 1);
+            int c = stoi(temp);
+            if(shellNum > 0) {
+                vector<int>::iterator vertNumIt;
+                IDplusBecauseOfShells = 0;
+                for(vertNumIt = numberOfVerticesInShells.begin();
+                 vertNumIt < numberOfVerticesInShells.end() - 1; vertNumIt ++) {
+                    IDplusBecauseOfShells += *vertNumIt;
+                }
+            }
+            a += IDplusBecauseOfShells;
+            b += IDplusBecauseOfShells;
+            c += IDplusBecauseOfShells;
+            //cout<<"a: "<< a <<" b: "<<b<<" c: "<<c<<endl;
+            a = mapBeforeMergeToAfter[a];
+            b = mapBeforeMergeToAfter[b];
+            c = mapBeforeMergeToAfter[c];
+            if(tCounter % 2 == 0) {
+                va = mesh.vertList[a];
+                vb = mesh.vertList[b];
+                vc = mesh.vertList[c];
+            } else {
+                vd = mesh.vertList[c];
+                mesh.addQuadFace(va, vb, vc, vd);
+            }
+            tCounter += 1;
             //cout<<va -> ID<<" "<<vb -> ID<<" "<<vc -> ID<<endl;
             mesh.addTriFace(va, vb, vc);
         } else if(regex_match(nextLine, lRegex)){

@@ -43,6 +43,8 @@ public:
     // Contructor given initial location of vertex.
     // @param x, y, z as the coordinates of this vertex.
     Vertex(float x, float y, float z, unsigned long ID);
+    // Test if the current vertex is selected or not
+    bool selected;
 };
 
 Vertex::Vertex(){
@@ -50,6 +52,7 @@ Vertex::Vertex(){
     normal = vec3(0, 0, 0);
     oneEdge = NULL;
     ID = 0;
+    selected = false;
 }
 
 Vertex::Vertex(float x, float y, float z, unsigned long ID) {
@@ -57,6 +60,7 @@ Vertex::Vertex(float x, float y, float z, unsigned long ID) {
     normal = vec3(0, 0, 0);
     oneEdge = NULL;
     ID = ID;
+    selected = false;
 }
 
 #endif // __VERTEX_H__

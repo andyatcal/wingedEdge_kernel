@@ -98,6 +98,8 @@ enum MODES { MODE_OBJECT, MODE_CAMERA, MODE_LIGHT, MODE_LAST } view_mode;
 
 mat4 transforms[MODE_LAST];
 
+vector<Vertex*> selectedVertices;
+
 //************************************************************
 //          Let's build some Shapes!!
 //************************************************************
@@ -264,7 +266,7 @@ void initRendering(){
     GLfloat light_ambient0[] = { 0.8, 0.8, 0.8, 10.0 };
     GLfloat light_diffuse0[] = { 1.0, 1.0, 1.0, 10.0 };
     GLfloat light_specular0[] = { 1.0, 1.0, 1.0, 10.0 };
-    GLfloat light_position0[] = { 1, 1, 1, 0.0 };
+    GLfloat light_position0[] = { 10, 10, 10, 0.0 };
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient0);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse0);
@@ -319,7 +321,7 @@ void initRendering(){
         vec3(0.0,  1.0, 0.0));  // up
 }
 
-void drawVertices() {
+void drawVerticesAsSphere() {
     vector<Vertex*> vertList = glMesh.vertList;
     vector<Vertex*>::iterator vIt;
     glPointSize(10);
@@ -332,10 +334,28 @@ void drawVertices() {
             if((*vIt) -> selected) {
                 glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, GREEN);
             }
-            glutSolidSphere(0.03,50,50);
+            glutSolidSphere(0.0003,50,50);
         glPopMatrix();
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, RED);
         counter += 1;
+    }
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, CYAN);
+}
+
+void drawVertices() {
+    vector<Vertex*> vertList = glMesh.vertList;
+    vector<Vertex*>::iterator vIt;
+    glPointSize(10);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, RED);
+    int counter = 0;
+    for(vIt = vertList.begin(); vIt < vertList.end(); vIt++) {
+        if((*vIt) -> selected) {
+            glBegin(GL_POINTS);
+            vec3 position = (*vIt) -> position;
+            glVertex3f(position[0], position[1], position[2]);
+            glNormal3f(position[0], position[1], position[2]);
+            glEnd();
+        }
     }
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, CYAN);
 }
@@ -352,8 +372,9 @@ void render(void) {
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, CYAN);
 
     drawVertices();
-    glLoadName(INT_MAX);
+    //glLoadName(INT_MAX);
     glMesh.drawMesh();
+    //drawVertices();
 
 /*
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, GREEN);
@@ -481,27 +502,82 @@ void list_hits(GLint hits, GLuint *names)
         printf("\n");
 }
 
-void pinFace(GLint hits, GLuint *names)
+void selectThisFace(GLint hits, GLuint *names)
 {
-    int minimumDepth = INT_MAX;
-    int minimumDepthIndex = INT_MAX;
-    for (int i = 0; i < hits; i++) {
-        int currentDepth = (GLubyte)names[i * 4 + 1];
-        if(currentDepth < minimumDepth) {
-            minimumDepth = currentDepth;
-            minimumDepthIndex = i;
+    if(hits > 0) {
+        int minimumDepth = INT_MAX;
+        int minimumDepthIndex = INT_MAX;
+        for (int i = 0; i < hits; i++) {
+            int currentDepth = (GLubyte)names[i * 4 + 1];
+            if(currentDepth < minimumDepth) {
+                minimumDepth = currentDepth;
+                minimumDepthIndex = i;
+            }
         }
-    }
-    int selectedID = names[minimumDepthIndex * 4 + 3];
-    Face * workFace = glMesh.faceList[selectedID];
-    if(!workFace->selected) {
-        workFace->selected = true;
-    } else {
-        workFace->selected = false;
+        int selectedID = names[minimumDepthIndex * 4 + 3];
+        Face * workFace = glMesh.faceList[selectedID];
+        if(!workFace->selected) {
+            workFace->selected = true;
+        } else {
+            workFace->selected = false;
+        }
     }
 }
 
-void pinPoint(GLint hits, GLuint *names)
+void selectPointFromThisFace(GLint hits, GLuint *names, GLdouble posX, GLdouble posY, GLdouble posZ)
+{
+    if(hits > 0) {
+        int minimumDepth = INT_MAX;
+        int minimumDepthIndex = INT_MAX;
+        for (int i = 0; i < hits; i++) {
+            int currentDepth = (GLubyte)names[i * 4 + 1];
+            if(currentDepth < minimumDepth) {
+                minimumDepth = currentDepth;
+                minimumDepthIndex = i;
+            }
+        }
+        int selectedID = names[minimumDepthIndex * 4 + 3];
+        Face * workFace = glMesh.faceList[selectedID];
+        Edge * firstEdge = workFace -> oneEdge;
+        Edge * currEdge = firstEdge;
+        Edge * nextEdge;
+        Vertex * tempv;
+        Vertex * selectedVertex;
+        float minDistance = 50000.0; // A very large value ...
+        do {
+            if(workFace == currEdge -> fa) {
+                tempv = currEdge -> vb;
+                nextEdge = currEdge -> nextVbFa;
+            } else {
+                if(currEdge -> mobius) {
+                    tempv = currEdge -> vb;
+                    nextEdge = currEdge -> nextVbFb;
+                } else {
+                    tempv = currEdge -> va;
+                    nextEdge = currEdge -> nextVaFb;
+                }
+            }
+            float newDistance = distance(tempv -> position, vec3(posX, posY, posZ));
+            if(newDistance < minDistance) {
+                minDistance = newDistance;
+                selectedVertex = tempv;
+            }
+            currEdge = nextEdge;
+        } while (currEdge != firstEdge);
+        //cout<<"Selected Point: "<<selectedVertex -> ID<<" ";
+        //cout<<selectedVertex -> position[0]<<" "<<selectedVertex -> position[1]<<" "<<selectedVertex -> position[2]<<endl;
+        if(selectedVertex -> selected) {
+            selectedVertex -> selected = false;
+        } else {
+            selectedVertex -> selected = true;
+            //cout<<"Hey!"<<endl;
+            //selectedVertices.push_back(selectedVertex);
+            //cout<<"Hmm?"<<endl;
+        }
+    }
+}
+
+void selectThisPoint(GLint hits, GLuint *names)
 {
     int minimumDepth = INT_MAX;
     int minimumDepthIndex = INT_MAX;
@@ -523,11 +599,24 @@ void pinPoint(GLint hits, GLuint *names)
     }
 }
 
-void selectFace(int x, int y) {
+void select(int x, int y) {
     GLuint buff[64] = {0};
     GLint hits, view[4];
+    GLdouble modelview[16];
+    GLdouble projection[16];
+    GLfloat winX, winY, winZ;
+    GLdouble posX, posY, posZ;
     glSelectBuffer(64, buff);
     glGetIntegerv(GL_VIEWPORT, view);
+    // Find the 3D points of the current clicked point
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview );
+    glGetDoublev(GL_PROJECTION_MATRIX, projection );
+    winX = (float)x;
+    winY = (float)view[3] - (float)y;
+    glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
+    gluUnProject( winX, winY, winZ, modelview, projection, view, &posX, &posY, &posZ);
+    //cout<<"X: "<<posX<<" Y: "<<posY<<" Z: "<<posZ<<endl;
+    // Find the face selected.
     glRenderMode(GL_SELECT);
     //glClearColor(0, 0, 0, 1);
     glInitNames();
@@ -543,9 +632,10 @@ void selectFace(int x, int y) {
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     hits = glRenderMode(GL_RENDER);
-    list_hits(hits, buff);
-    //pinFace(hits, buff);
-    pinPoint(hits, buff);
+    //list_hits(hits, buff);
+    //selectThisFace(hits, buff);
+    selectPointFromThisFace(hits, buff, posX, posY, posZ);
+    //selectPoint(hits, buff);
     glMatrixMode(GL_MODELVIEW);
 }
 
@@ -559,7 +649,7 @@ void onMouse(int button, int state, int x, int y) {
     }
     if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
         //printf("Mouse button %d pressed at %d %d\n", button, x, y);
-        selectFace(x, y);
+        select(x, y);
     }
 }
 

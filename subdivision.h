@@ -434,6 +434,7 @@ void Subdivision::compileNewMesh(vector<Face*> &newFaceList){
             previousEF = edgeEF;
             if(notFirstFace) {
                 newFace -> oneEdge = edgeA;
+                newFace -> id = newFaceList.size();
                 newFaceList.push_back(newFace);
             }
             notFirstFace = true;
@@ -498,6 +499,7 @@ void Subdivision::compileNewMesh(vector<Face*> &newFaceList){
         edgeEF -> fa = newFace;
         previousEF -> nextVbFb = edgeEF;
         newFace -> oneEdge = edgeA;
+        newFace -> id = newFaceList.size();
         newFaceList.push_back(newFace);
         currFace -> facePoint -> oneEdge = previousEF;
     }

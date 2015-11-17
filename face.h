@@ -30,11 +30,17 @@ public:
     Vertex * facePoint;
     // Constructor.
     Face();
+    // Test if this face is selected
+    bool selected;
+    // FaceID, should be an unique int
+    int id;
+
 };
 
 Face::Face(){
     oneEdge = NULL;
     facePoint = NULL;
+    selected = false;
 }
 
 #endif // __FACE_H__
