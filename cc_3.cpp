@@ -73,6 +73,8 @@ bool wireframe = false;
 bool smoothShading = false;
 //Initial state of GL_Light
 bool lightOn = false; 
+//Initial state of boarder selection
+int boarderSelection = 0;
 //Initial Rotation Angle
 float angle = 0.0; 
 //The distance of camera and orgin.
@@ -100,6 +102,12 @@ mat4 transforms[MODE_LAST];
 
 vector<Vertex*> selectedVertices;
 
+// For partial boarder selection
+Vertex * firstBoarderSelectionPoint = NULL;
+Vertex * secondBoarderSelectionPoint = NULL;
+vector<Vertex*> firstHalfBoarder;
+vector<Vertex*> vertToSelect;
+
 //************************************************************
 //          Let's build some Shapes!!
 //************************************************************
@@ -113,9 +121,9 @@ void init(int level, string inputSIF);
 void init(int level){
     //makeSquare(glMesh);
     //makePyramid(glMesh);
-    makeCube(glMesh, 1, 1, 1);
+    //makeCube(glMesh, 1, 1, 1);
     //makeOpenCube(glMesh);
-    //makeRing(glMesh);
+    makeRing(glMesh);
     //makeOctahedron(glMesh);
     //makeSharpOctahedron(glMesh);
     //makeNormalStrip(glMesh);
@@ -463,6 +471,18 @@ void keyboard(unsigned char key, int x, int y) {
             cameraDistance *= 1.1;
         }
     }
+    if (key == 'b') {
+        if (boarderSelection == 2) {
+            cout<<"Boarder Selection Switch OFF."<<endl;
+            boarderSelection = 0;
+        } else if (boarderSelection == 0) {
+            cout<<"Whole Boarder Selection Switch ON."<<endl;
+            boarderSelection = 1;
+        } else {
+            cout<<"Partial Boarder Selection Switch ON. (Whole Boarder Selection OFF.)"<<endl;
+            boarderSelection = 2;
+        }
+    }
     glutPostRedisplay();
 }
 
@@ -566,15 +586,266 @@ void selectPointFromThisFace(GLint hits, GLuint *names, GLdouble posX, GLdouble 
             }
             currEdge = nextEdge;
         } while (currEdge != firstEdge);
-        //cout<<"Selected Point: "<<selectedVertex -> ID<<" ";
-        //cout<<selectedVertex -> position[0]<<" "<<selectedVertex -> position[1]<<" "<<selectedVertex -> position[2]<<endl;
         if(selectedVertex -> selected) {
             selectedVertex -> selected = false;
         } else {
             selectedVertex -> selected = true;
-            //cout<<"Hey!"<<endl;
-            //selectedVertices.push_back(selectedVertex);
-            //cout<<"Hmm?"<<endl;
+        }
+    }
+}
+
+void selectWholeBoarderPointsFromThisFace(GLint hits, GLuint *names, GLdouble posX, GLdouble posY, GLdouble posZ)
+{
+    if(hits > 0) {
+        int minimumDepth = INT_MAX;
+        int minimumDepthIndex = INT_MAX;
+        for (int i = 0; i < hits; i++) {
+            int currentDepth = (GLubyte)names[i * 4 + 1];
+            if(currentDepth < minimumDepth) {
+                minimumDepth = currentDepth;
+                minimumDepthIndex = i;
+            }
+        }
+        int selectedID = names[minimumDepthIndex * 4 + 3];
+        Face * workFace = glMesh.faceList[selectedID];
+        Edge * firstEdge = workFace -> oneEdge;
+        Edge * currEdge = firstEdge;
+        Edge * nextEdge;
+        Vertex * selectedVertex = NULL;
+        Edge * startingEdge;
+        Vertex * tempva;
+        Vertex * tempvb;
+        float minDistance = 50000.0; // A very large value ...
+        do {
+            if(workFace == currEdge -> fa) {
+                nextEdge = currEdge -> nextVbFa;
+            } else {
+                if(currEdge -> mobius) {
+                    nextEdge = currEdge -> nextVbFb;
+                } else {
+                    nextEdge = currEdge -> nextVaFb;
+                }
+            }
+            if(currEdge -> fb == NULL) {
+                tempva = currEdge -> va;
+                tempvb = currEdge -> vb;
+                float newDistanceA = distance(tempva -> position, vec3(posX, posY, posZ));
+                float newDistanceB = distance(tempvb -> position, vec3(posX, posY, posZ));
+                if(minDistance > newDistanceA) {
+                    minDistance = newDistanceA;
+                    selectedVertex = tempva;
+                    startingEdge = currEdge;
+                }
+                if(minDistance > newDistanceB) {
+                    minDistance = newDistanceB;
+                    selectedVertex = tempvb;
+                    startingEdge = currEdge;
+                }
+            }
+            currEdge = nextEdge;
+        } while (currEdge != firstEdge);
+        if(selectedVertex != NULL) {
+            if(selectedVertex -> selected) {
+                Vertex * nextVert = selectedVertex;
+                Edge * nextBoarderEdge = startingEdge;
+                do {
+                    nextVert -> selected = false;
+                    //cout<<nextVert -> ID;
+                    if(nextVert == nextBoarderEdge -> va) {
+                        nextBoarderEdge = nextBoarderEdge -> nextVaFb;
+                    } else {
+                        nextBoarderEdge = nextBoarderEdge -> nextVbFb;
+                    }
+                    if(nextBoarderEdge -> va == nextVert) {
+                        nextVert = nextBoarderEdge -> vb;
+                    } else {
+                        nextVert = nextBoarderEdge -> va;
+                    }
+                } while (nextVert != selectedVertex);
+            } else {
+                Vertex * nextVert = selectedVertex;
+                Edge * nextBoarderEdge = startingEdge;
+                do {
+                    nextVert -> selected = true;
+                    //cout<<nextVert -> ID;
+                    if(nextVert == nextBoarderEdge -> va) {
+                        nextBoarderEdge = nextBoarderEdge -> nextVaFb;
+                    } else {
+                        nextBoarderEdge = nextBoarderEdge -> nextVbFb;
+                    }
+                    if(nextBoarderEdge -> va == nextVert) {
+                        nextVert = nextBoarderEdge -> vb;
+                    } else {
+                        nextVert = nextBoarderEdge -> va;
+                    }
+                } while (nextVert != selectedVertex);
+            }
+        }
+    }
+}
+
+void selectPartialBoarderPoints(GLint hits, GLuint *names, GLdouble posX, GLdouble posY, GLdouble posZ)
+{
+    if(hits > 0) {
+        int minimumDepth = INT_MAX;
+        int minimumDepthIndex = INT_MAX;
+        for (int i = 0; i < hits; i++) {
+            int currentDepth = (GLubyte)names[i * 4 + 1];
+            if(currentDepth < minimumDepth) {
+                minimumDepth = currentDepth;
+                minimumDepthIndex = i;
+            }
+        }
+        int selectedID = names[minimumDepthIndex * 4 + 3];
+        Face * workFace = glMesh.faceList[selectedID];
+        Edge * firstEdge = workFace -> oneEdge;
+        Edge * currEdge = firstEdge;
+        Edge * nextEdge;
+        Vertex * selectedVertex = NULL;
+        Edge * startingEdge;
+        Vertex * tempva;
+        Vertex * tempvb;
+        float minDistance = 50000.0; // A very large value ...
+        do {
+            if(workFace == currEdge -> fa) {
+                nextEdge = currEdge -> nextVbFa;
+            } else {
+                if(currEdge -> mobius) {
+                    nextEdge = currEdge -> nextVbFb;
+                } else {
+                    nextEdge = currEdge -> nextVaFb;
+                }
+            }
+            if(currEdge -> fb == NULL) {
+                tempva = currEdge -> va;
+                tempvb = currEdge -> vb;
+                float newDistanceA = distance(tempva -> position, vec3(posX, posY, posZ));
+                float newDistanceB = distance(tempvb -> position, vec3(posX, posY, posZ));
+                if(minDistance > newDistanceA) {
+                    minDistance = newDistanceA;
+                    selectedVertex = tempva;
+                    startingEdge = currEdge;
+                }
+                if(minDistance > newDistanceB) {
+                    minDistance = newDistanceB;
+                    selectedVertex = tempvb;
+                    startingEdge = currEdge;
+                }
+            }
+            currEdge = nextEdge;
+        } while (currEdge != firstEdge);
+        if(selectedVertex) {
+            if (!firstBoarderSelectionPoint) {
+                firstBoarderSelectionPoint = selectedVertex;
+                cout<<"Selecting the first Point on boarder."<<endl;
+                selectedVertex -> selected = true;
+                Vertex * nextVert = selectedVertex;
+                Edge * nextBoarderEdge = startingEdge;
+                do {
+                    firstHalfBoarder.push_back(nextVert);
+                    //cout<<nextVert -> ID<<endl;;
+                    if(nextVert == nextBoarderEdge -> va) {
+                        nextBoarderEdge = nextBoarderEdge -> nextVaFb;
+                    } else {
+                        nextBoarderEdge = nextBoarderEdge -> nextVbFb;
+                    }
+                    if(nextBoarderEdge -> va == nextVert) {
+                        nextVert = nextBoarderEdge -> vb;
+                    } else {
+                        nextVert = nextBoarderEdge -> va;
+                    }
+                } while (nextVert != selectedVertex);
+                //cout<<firstHalfBoarder.size()<<endl;
+            } else if (!secondBoarderSelectionPoint) {
+                //We need to test if this second point in the boarder of the first selecte point.
+                vector<Vertex*>::iterator vIt;
+                for(vIt = firstHalfBoarder.begin(); vIt < firstHalfBoarder.end(); vIt++) {
+                    if((*vIt) == selectedVertex) {
+                        if((*vIt) == firstBoarderSelectionPoint) {
+                            cout<<"Unselecting the first point on boarder."<<endl;
+                            firstBoarderSelectionPoint -> selected = false;
+                            firstBoarderSelectionPoint = NULL;
+                            firstHalfBoarder.clear();
+                            //(*vIt) -> selected = false;
+                        }
+                        break;
+                    }
+                }
+                if(!firstHalfBoarder.empty()) {
+                    if(vIt == firstHalfBoarder.end()) {
+                        cout<<"Your choice of the two points is not on the same boarder. Selection ABORT."<<endl;
+                        firstBoarderSelectionPoint -> selected = false;
+                        firstBoarderSelectionPoint = NULL;
+                        firstHalfBoarder.clear();
+                    } else {
+                        cout<<"Selecting the second Point on boarder."<<endl;
+                        secondBoarderSelectionPoint = selectedVertex;
+                        selectedVertex -> selected = true;
+                    }
+                }
+            } else if(!vertToSelect.empty()) {
+                cout<<"Unselecting all points on partial boarder."<<endl;
+                vector<Vertex*>::iterator vIt;
+                for(vIt = vertToSelect.begin(); vIt < vertToSelect.end(); vIt++) {
+                    (*vIt) -> selected = false;
+                }
+                firstBoarderSelectionPoint -> selected = false;
+                secondBoarderSelectionPoint -> selected = false;
+                firstBoarderSelectionPoint = NULL;
+                secondBoarderSelectionPoint = NULL;
+                firstHalfBoarder.clear();
+                vertToSelect.clear();
+            } else {
+                vector<Vertex*>::iterator vIt;
+                bool hasSeenSecondPoint = false;
+                for(vIt = firstHalfBoarder.begin(); vIt < firstHalfBoarder.end(); vIt++) {
+                    if((*vIt) == selectedVertex) {
+                        if((*vIt) == firstBoarderSelectionPoint || (*vIt) == secondBoarderSelectionPoint) {
+                            cout<<"Unselecting points on boarder."<<endl;
+                            firstBoarderSelectionPoint -> selected = false;
+                            secondBoarderSelectionPoint -> selected = false;
+                            firstBoarderSelectionPoint = NULL;
+                            secondBoarderSelectionPoint = NULL;
+                            firstHalfBoarder.clear();
+                        }
+                        break;
+                    } else if((*vIt) == secondBoarderSelectionPoint) {
+                        hasSeenSecondPoint = true;
+                    }
+                }
+                if(!firstHalfBoarder.empty()) {
+                    if(vIt == firstHalfBoarder.end()) {
+                        cout<<"Your choice of the third points is not on the same boarder. Selection ABORT."<<endl;
+                        firstBoarderSelectionPoint -> selected = false;
+                        secondBoarderSelectionPoint -> selected = false;
+                        firstBoarderSelectionPoint = NULL;
+                        secondBoarderSelectionPoint = NULL;
+                        firstHalfBoarder.clear();
+                    } else {
+                        cout<<"Selecting the half boarder on this side."<<endl;
+                        vector<Vertex*>::iterator vSelIt;
+                        if(!hasSeenSecondPoint) {
+                            for(vSelIt = firstHalfBoarder.begin(); vSelIt < firstHalfBoarder.end(); vSelIt++) {
+                                vertToSelect.push_back(*vSelIt);
+                                if((*vSelIt) == secondBoarderSelectionPoint) {
+                                    break;
+                                }
+                            }
+                        } else {
+                            vertToSelect.push_back(firstBoarderSelectionPoint);
+                            for(vSelIt = firstHalfBoarder.end() - 1; vSelIt >= firstHalfBoarder.begin(); vSelIt--) {
+                                vertToSelect.push_back(*vSelIt);
+                                if((*vSelIt) == secondBoarderSelectionPoint) {
+                                    break;
+                                }
+                            }
+                        }
+                        for(vSelIt = vertToSelect.begin(); vSelIt < vertToSelect.end(); vSelIt++) {
+                            (*vSelIt) -> selected = true;
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -636,7 +907,13 @@ void select(int x, int y) {
     hits = glRenderMode(GL_RENDER);
     //list_hits(hits, buff);
     //selectThisFace(hits, buff);
-    selectPointFromThisFace(hits, buff, posX, posY, posZ);
+    if(boarderSelection == 0){
+        selectPointFromThisFace(hits, buff, posX, posY, posZ);
+    } else if( boarderSelection == 1) {
+        selectWholeBoarderPointsFromThisFace(hits, buff, posX, posY, posZ);
+    } else {
+        selectPartialBoarderPoints(hits, buff, posX, posY, posZ);
+    }
     //selectPoint(hits, buff);
     glMatrixMode(GL_MODELVIEW);
 }
