@@ -244,8 +244,8 @@ void initPolyline()
     v15 -> ID = 15;
     v10 -> position = vec3(-3, 1, 0);
     v11 -> position = vec3(-1, 1, 0);
-    v12 -> position = vec3(-0.5, 2, 0);
-    v13 -> position = vec3(0, 2, 0);
+    v12 -> position = vec3(-0.5, 0, 0);
+    v13 -> position = vec3(0, 0, 0);
     v14 -> position = vec3(1, 1, 0);
     v15 -> position = vec3(2.5, 1, 0);
     boarder1 -> vertices.push_back(v10);
@@ -280,7 +280,7 @@ void initPolyline()
     boarder2 -> vertices.push_back(v24);
     boarder2 -> vertices.push_back(v25);
     Zipper zipper;
-    glMesh = zipper.zip(boarder1, boarder2, 1.5);
+    glMesh = zipper.zip(boarder1, boarder2, 2.0);
     glMesh.computeNormals();
 }
 
@@ -332,7 +332,7 @@ void initPolyline1()
     boarder2 -> vertices.push_back(v24);
     boarder2 -> vertices.push_back(v25);
     Zipper zipper;
-    glMesh = zipper.zip(boarder1, boarder2);
+    glMesh = zipper.zip(boarder1, boarder2, 1.5);
     glMesh.computeNormals();
 }
 
@@ -372,7 +372,7 @@ void initPolyline2()
     boarder2 -> vertices.push_back(v24);
     boarder2 -> vertices.push_back(v25);
     Zipper zipper;
-    glMesh = zipper.zip(boarder1, boarder2, 1.5);
+    glMesh = zipper.zip(boarder1, boarder2, 1.3);
     glMesh.computeNormals();
 }
 
@@ -529,6 +529,122 @@ void initPolyline6()
     boarder2 -> vertices.push_back(v25);
     Zipper zipper;
     glMesh = zipper.zip(boarder1, boarder2, 1.5);
+    glMesh.computeNormals();
+}
+
+void initPolyline7()
+{
+    Vertex * v10 = new Vertex;
+    Vertex * v11 = new Vertex;
+    Vertex * v12 = new Vertex;
+    Vertex * v13 = new Vertex;
+    Vertex * v14 = new Vertex;
+    Vertex * v15 = new Vertex;
+    v10 -> ID = 10;
+    v11 -> ID = 11;
+    v12 -> ID = 12;
+    v13 -> ID = 13;
+    v14 -> ID = 14;
+    v15 -> ID = 15;
+    v10 -> position = vec3(-3, 1, 0);
+    v11 -> position = vec3(-1, 1, 0);
+    v12 -> position = vec3(-0.5, 2, 0);
+    v13 -> position = vec3(0, 2, 0);
+    v14 -> position = vec3(1, 1, 0);
+    v15 -> position = vec3(2.5, 1, 0);
+    boarder1 -> vertices.push_back(v10);
+    boarder1 -> vertices.push_back(v11);
+    boarder1 -> vertices.push_back(v12);
+    boarder1 -> vertices.push_back(v13);
+    boarder1 -> vertices.push_back(v14);
+    boarder1 -> vertices.push_back(v15);
+
+    Vertex * v20 = new Vertex;
+    Vertex * v21 = new Vertex;
+    Vertex * v22 = new Vertex;
+    Vertex * v23 = new Vertex;
+    Vertex * v24 = new Vertex;
+    Vertex * v25 = new Vertex;
+    v20 -> ID = 20;
+    v21 -> ID = 21;
+    v22 -> ID = 22;
+    v23 -> ID = 23;
+    v24 -> ID = 24;
+    v25 -> ID = 25;
+    v25 -> position = vec3(-3, -1, 0);
+    v24 -> position = vec3(-1, -1, 0);
+    v23 -> position = vec3(-0.5, -2, 0);
+    v22 -> position = vec3(0, -2, 0);
+    v21 -> position = vec3(1, -1, 0);
+    v20 -> position = vec3(2.5, -1, 0);
+    boarder2 -> vertices.push_back(v20);
+    boarder2 -> vertices.push_back(v21);
+    boarder2 -> vertices.push_back(v22);
+    boarder2 -> vertices.push_back(v23);
+    boarder2 -> vertices.push_back(v24);
+    boarder2 -> vertices.push_back(v25);
+    Zipper zipper;
+    glMesh = zipper.zip(boarder1, boarder2, 1.5);
+    Subdivision myCC(glMesh);
+    glMesh = myCC.ccSubdivision(2);
+    glMesh.computeNormals();
+}
+
+void initPolyline8()
+{
+    Vertex * v10 = new Vertex;
+    Vertex * v11 = new Vertex;
+    Vertex * v12 = new Vertex;
+    Vertex * v13 = new Vertex;
+    Vertex * v14 = new Vertex;
+    Vertex * v15 = new Vertex;
+    v10 -> ID = 10;
+    v11 -> ID = 11;
+    v12 -> ID = 12;
+    v13 -> ID = 13;
+    v14 -> ID = 14;
+    v15 -> ID = 15;
+    v10 -> position = vec3(-3, 1, 0.5);
+    v11 -> position = vec3(-1, 1, 0.3);
+    v12 -> position = vec3(-0.5, 2, 0.2);
+    v13 -> position = vec3(0, 2, -0.3);
+    v14 -> position = vec3(1, 1, -0.2);
+    v15 -> position = vec3(2.5, 1, -0.5);
+    boarder1 -> vertices.push_back(v10);
+    boarder1 -> vertices.push_back(v11);
+    boarder1 -> vertices.push_back(v12);
+    boarder1 -> vertices.push_back(v13);
+    boarder1 -> vertices.push_back(v14);
+    boarder1 -> vertices.push_back(v15);
+
+    Vertex * v20 = new Vertex;
+    Vertex * v21 = new Vertex;
+    Vertex * v22 = new Vertex;
+    Vertex * v23 = new Vertex;
+    Vertex * v24 = new Vertex;
+    Vertex * v25 = new Vertex;
+    v20 -> ID = 20;
+    v21 -> ID = 21;
+    v22 -> ID = 22;
+    v23 -> ID = 23;
+    v24 -> ID = 24;
+    v25 -> ID = 25;
+    v25 -> position = vec3(-3, -1, 0);
+    v24 -> position = vec3(-1, -1, 0);
+    v23 -> position = vec3(-0.5, -2, 0);
+    v22 -> position = vec3(0, -2, 0);
+    v21 -> position = vec3(1, -1, 0);
+    v20 -> position = vec3(2.5, -1, 0);
+    boarder2 -> vertices.push_back(v20);
+    boarder2 -> vertices.push_back(v21);
+    boarder2 -> vertices.push_back(v22);
+    boarder2 -> vertices.push_back(v23);
+    boarder2 -> vertices.push_back(v24);
+    boarder2 -> vertices.push_back(v25);
+    Zipper zipper;
+    glMesh = zipper.zip(boarder1, boarder2, 1.5);
+    Subdivision myCC(glMesh);
+    glMesh = myCC.ccSubdivision(2);
     glMesh.computeNormals();
 }
 
@@ -1302,6 +1418,10 @@ int main(int argc, char** argv) {
         initPolyline5();
     } else if (testcase == 6) {
         initPolyline6();
+    } else if (testcase == 7) {
+        initPolyline7();
+    } else if (testcase == 8) {
+        initPolyline8();
     }
     
     glutInitWindowSize(viewport.width, viewport.height);
