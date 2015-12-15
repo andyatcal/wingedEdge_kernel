@@ -449,12 +449,12 @@ void getVertexNormal(Vertex * currVert){
 void Mesh::computeNormals(){
     vector<Vertex*>::iterator vIt;
     vector<Face*>::iterator fIt;
-    cout<<"faceTable size: "<<faceList.size()<<endl;
+    //cout<<"faceTable size: "<<faceList.size()<<endl;
     for(fIt = faceList.begin(); fIt < faceList.end(); fIt++) {
         getFaceNormal(*fIt);
     }
 
-    cout<<"the vertTable size is "<<vertList.size()<<endl;
+    //cout<<"vertTable size: "<<vertList.size()<<endl;
     for(vIt = vertList.begin(); vIt != vertList.end(); vIt++) {
         //cout<<"Now calculating vertex with ID: "<< vIt -> first <<endl;
         getVertexNormal(*vIt);
