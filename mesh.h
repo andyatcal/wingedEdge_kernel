@@ -536,7 +536,7 @@ void Mesh::drawMesh() {
             //cout<<"Current Vertex ID: "<<tempv -> ID<<endl;
         } while(currEdge != firstEdge);
         glEnd();
-        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, CYAN);
+        //glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, CYAN);
     }
 }
 

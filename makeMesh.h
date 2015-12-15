@@ -16,7 +16,7 @@ using namespace glm;
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////
-// MeshUtils Class -- Utility Functions with Mesh.
+// MakeMesh Class -- Create Initial Meshes.
 void makeSquare(Mesh &mesh) {
     //make new mesh
     mesh.vertList.clear();
