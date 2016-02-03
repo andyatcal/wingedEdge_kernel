@@ -9,8 +9,8 @@
 #define __TRANSFORMATION_H__
 
 #include <vector>
-#include <unordered_map>
-#include <glm/gtc/matrix_transform.hpp>
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/constants.hpp"
 
 using namespace std;
 using namespace glm;
@@ -19,69 +19,26 @@ using namespace glm;
 // Transformation Class -- A class to create a new mesh by transformation.
     
 // Create a new Mesh given the transformation matrix
-// @param matrix, the mesh of self-merege
-Mesh transform(Mesh & mesh, mat4 matrix) {
-    Mesh transfromedMesh;
+// @param mesh, the mesh for transformation
+// @param matrix, the matrix for transformation
+void transform(Mesh & mesh, mat4 matrix) {
     vector<Vertex*>::iterator vIt;
-    vector<Face*>::iterator fIt;
-    unordered_map<Vertex*, Vertex*> transformMap;
-    unordered_map<Vertex*, Vertex*>::iterator mIt;
-    for(vIt = mesh.vertList.begin(); vIt < mesh.vertList.end(); vIt ++) {
-        Vertex * v = new Vertex;
-        v -> position = ((*vIt) -> position);
-        v -> ID = mergedMesh.vertList.size();
-        transformMap[*vIt] = v;
-        mergedMesh.vertList.push_back(v);
+    for(vIt = mesh.vertList.begin(); vIt < mesh.vertList.end(); vIt++) {
+        (*vIt) -> position = vec3(matrix * vec4((*vIt) -> position, 1));
     }
-    for(fIt = mesh1.faceList.begin(); fIt < mesh1.faceList.end(); fIt ++) {
-        Edge * firstEdge = (*fIt) -> oneEdge;
-        Edge * currEdge = firstEdge;
-        Edge * nextEdge;
-        vector<Vertex*> vertices;
-        //vertices.clear();
-        do{
-            if(currEdge -> fa == (*fIt)) {
-                vertices.push_back(mergeMap[currEdge -> vb]);
-                nextEdge = currEdge -> nextVbFa;
-            } else{
-                if(currEdge -> mobius) {
-                    vertices.push_back(mergeMap[currEdge -> vb]);
-                    nextEdge = currEdge -> nextVbFb;
-                } else {
-                    vertices.push_back(mergeMap[currEdge -> va]);
-                    nextEdge = currEdge -> nextVaFb;
-                }
-            }
-            currEdge = nextEdge;
-        } while(currEdge != firstEdge);
-        mergedMesh.addPolygonFace(vertices);
-    }
-    for(fIt = mesh2.faceList.begin(); fIt < mesh2.faceList.end(); fIt ++) {
-        Edge * firstEdge = (*fIt) -> oneEdge;
-        Edge * currEdge = firstEdge;
-        Edge * nextEdge;
-        vector<Vertex*> vertices;
-        //vertices.clear();
-        do{
-            if(currEdge -> fa == (*fIt)) {
-                vertices.push_back(mergeMap[currEdge -> vb]);
-                nextEdge = currEdge -> nextVbFa;
-            } else{
-                if(currEdge -> mobius) {
-                    vertices.push_back(mergeMap[currEdge -> vb]);
-                    nextEdge = currEdge -> nextVbFb;
-                } else {
-                    vertices.push_back(mergeMap[currEdge -> va]);
-                    nextEdge = currEdge -> nextVaFb;
-                }
-            }
-            currEdge = nextEdge;
-        } while(currEdge != firstEdge);
-        mergedMesh.addPolygonFace(vertices);
-    }
-    mergedMesh.buildBoundary();
-    return mergedMesh;
 }
 
+mat4 krotate(vec3 rot_axis, float radian) {
+
+    return rotate(radian, rot_axis);
+}
+
+mat4 kscale(vec3 scales) {
+    return scale(scales);
+}
+
+mat4 ktranslate(vec3 translation) {
+    return translate(translation);
+}
 
 #endif // __TRANSFORMATION_H__

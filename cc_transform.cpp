@@ -36,6 +36,8 @@ GLfloat CYAN[] = {.0f, .8f, 0.8f, 1.f};
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/constants.hpp"
+#include "glm/gtx/string_cast.hpp"
 #include <iostream>
 #include <fstream>
 #include <regex>
@@ -75,7 +77,7 @@ bool smoothShading = false;
 //Initial state of GL_Light
 bool lightOn = false; 
 //The distance of camera and orgin.
-float cameraDistance = 1.0;
+float cameraDistance = 5.0;
 
 //************************************************************
 //          Global Variables for Pipeline
@@ -128,7 +130,8 @@ mat4 transforms[MODE_LAST];
 
 // Manually Create. (From functions of MakeMesh class)
 void init(int level){
-    makeMobius(master_mesh);
+    //makeMobius(master_mesh);
+    makeSquare(master_mesh);
     master_mesh.computeNormals();
 }
 
@@ -1111,7 +1114,11 @@ int main(int argc, char** argv) {
         inputSIF = argv[2];
         init(level, inputSIF);
     }
-
+    // Transformation tests
+    mat4 rot = krotate(vec3(1, 1, 0), PI/4);
+    mat4 translation = ktranslate(vec3(1, 1, 1));
+    mat4 scaling = kscale(vec3(0.5, 1, 2));
+    transform(master_mesh, rot);
     glutInitWindowSize(viewport.width, viewport.height);
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);
@@ -1125,7 +1132,6 @@ int main(int argc, char** argv) {
     glutSpecialFunc(keySpecial);
     glutMouseFunc(onMouse);
     glutMotionFunc(onMotion);
-
     glutMainLoop();
 
 }
