@@ -92,6 +92,9 @@ Mesh master_sub_mesh;
 // The temporary mesh
 Mesh temp_mesh;
 
+// A copy of master_mesh
+Mesh copy_mesh;
+
 // Mode: Adding (0) or Zipping (1). Default as adding.
 int addingMode = 0;
 
@@ -801,6 +804,10 @@ void render(void) {
     if(!temp_mesh.vertList.empty()) {
         temp_mesh.drawMesh();
     }
+    if(!copy_mesh.vertList.empty()) {
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, BLUE);
+        copy_mesh.drawMesh();
+    }
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, RED);
     glLineWidth(4.0);
     if(border1) {
@@ -1118,7 +1125,8 @@ int main(int argc, char** argv) {
     mat4 rot = krotate(vec3(1, 1, 0), PI/4);
     mat4 translation = ktranslate(vec3(1, 1, 1));
     mat4 scaling = kscale(vec3(0.5, 1, 2));
-    transform(master_mesh, rot);
+    copy_mesh = meshCopy(master_mesh);
+    transform(copy_mesh, rot);
     glutInitWindowSize(viewport.width, viewport.height);
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);
