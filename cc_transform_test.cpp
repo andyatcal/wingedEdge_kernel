@@ -134,8 +134,9 @@ mat4 transforms[MODE_LAST];
 
 // Manually Create. (From functions of MakeMesh class)
 void init(int level){
-    makeMobius(master_mesh);
+    //makeMobius(master_mesh);
     //makeSquare(master_mesh);
+    master_mesh = mergeTwoMeshes2();
     master_mesh.computeNormals();
 }
 
@@ -1127,14 +1128,6 @@ int main(int argc, char** argv) {
         inputSIF = argv[2];
         init(level, inputSIF);
     }
-    // Transformation tests
-    mat4 rot = krotate(vec3(1, 1, 0), PI/4);
-    mat4 translation = ktranslate(vec3(1, 1, 1));
-    mat4 scaling = kscale(vec3(0.5, 1, 2));
-    copy_mesh = meshCopy(master_mesh);
-    transform(copy_mesh, rot);
-    transform(copy_mesh, scaling);
-    transform(copy_mesh, translation);
     glutInitWindowSize(viewport.width, viewport.height);
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);

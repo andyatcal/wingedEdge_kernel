@@ -32,10 +32,10 @@ void makeSquare(Mesh &mesh) {
     v3 -> position = vec3(-1, -1, 0);
     v4 -> position = vec3(-1, 1, 0);
 
-    v1 -> ID = 1;
-    v2 -> ID = 2;
-    v3 -> ID = 3;
-    v4 -> ID = 4;
+    v1 -> ID = 0;
+    v2 -> ID = 1;
+    v3 -> ID = 2;
+    v4 -> ID = 3;
     mesh.addVertex(v1);
     mesh.addVertex(v2);
     mesh.addVertex(v3);
@@ -74,18 +74,18 @@ Mesh mergeTwoMeshes1() {
     v11 -> position = vec3(-0.5, 0, 0);
     v12 -> position = vec3(-0.5, 0, 0);
     
-    v1 -> ID = 1;
-    v2 -> ID = 2;
-    v3 -> ID = 3;
-    v4 -> ID = 4;
-    v5 -> ID = 5;
-    v6 -> ID = 6;
-    v7 -> ID = 7;
-    v8 -> ID = 8;
-    v9 -> ID = 9;
-    v10 -> ID = 10;
-    v11 -> ID = 11;
-    v12 -> ID = 12;
+    v1 -> ID = 0;
+    v2 -> ID = 1;
+    v3 -> ID = 2;
+    v4 -> ID = 3;
+    v5 -> ID = 4;
+    v6 -> ID = 5;
+    v7 -> ID = 6;
+    v8 -> ID = 7;
+    v9 -> ID = 8;
+    v10 -> ID = 9;
+    v11 -> ID = 10;
+    v12 -> ID = 11;
     
     mesh1.addVertex(v1);
     mesh1.addVertex(v2);
@@ -124,6 +124,56 @@ Mesh mergeTwoMeshes1() {
     return merge(mesh1, mesh2);
     //return mesh1;
 }
+
+Mesh mergeTwoMeshes2() {
+    //make new mesh
+    Mesh mesh1;
+    Mesh mesh2;
+    Vertex * v1 = new Vertex;
+    Vertex * v2 = new Vertex;
+    Vertex * v3 = new Vertex;
+    Vertex * v4 = new Vertex;
+    Vertex * v5 = new Vertex;
+    Vertex * v6 = new Vertex;
+    Vertex * v7 = new Vertex;
+    Vertex * v8 = new Vertex;
+    Vertex * v9 = new Vertex;
+    Vertex * v10 = new Vertex;
+    Vertex * v11 = new Vertex;
+    Vertex * v12 = new Vertex;
+
+    v1 -> position = vec3(1, 1, 0);
+    v2 -> position = vec3(-1, 1, 0);
+    v3 -> position = vec3(-1, 0, 0);
+    v4 -> position = vec3(1, 0, 0);
+
+    v1 -> ID = 0;
+    v2 -> ID = 1;
+    v3 -> ID = 2;
+    v4 -> ID = 3;
+    
+    mesh1.addVertex(v1);
+    mesh1.addVertex(v2);
+    mesh1.addVertex(v3);
+    mesh1.addVertex(v4);
+
+    vector<Vertex*> topFace;
+    topFace.push_back(v1);
+    topFace.push_back(v2);
+    topFace.push_back(v3);
+    topFace.push_back(v4);
+
+    mesh1.addPolygonFace(topFace, true);
+    mesh1.buildBoundary();
+
+    mesh2 = meshCopy(mesh1);
+    mat4 translate = ktranslate(vec3(0, -1, 0));
+    transform(mesh2, translate);
+
+    Mesh merged = merge(mesh1, mesh2);
+    return merged;
+}
+
 
 void makePyramid(Mesh &mesh){
     //make new mesh

@@ -271,7 +271,6 @@ void Mesh::addPolygonFace(vector<Vertex*> vertices, bool reverseOrder = false) {
             }
         }
     }
-    // Fix this
     newFace -> oneEdge = currEdge;
     for(eIt = edgesInFace.begin(); eIt < edgesInFace.end(); eIt ++) {
         Edge * currEdge = (*eIt);

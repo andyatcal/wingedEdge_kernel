@@ -44,6 +44,9 @@ mat4 ktranslate(vec3 translation) {
 Mesh meshCopy(Mesh & mesh) {
     cout<<"Creating a copy of the current map.\n";
     Mesh newMesh;
+    newMesh.vertList.clear();
+    newMesh.edgeTable.clear();
+    newMesh.faceList.clear();
     vector<Vertex*>::iterator vIt;
     for(vIt = mesh.vertList.begin();
         vIt < mesh.vertList.end(); vIt ++) {
@@ -53,6 +56,7 @@ Mesh meshCopy(Mesh & mesh) {
         newMesh.addVertex(vertCopy);
     }
     vector<Face*>::iterator fIt;
+    vector<Vertex*> vertices;
     for(fIt = mesh.faceList.begin();
      fIt < mesh.faceList.end(); fIt ++) {
         Face * tempFace = *fIt;
@@ -60,7 +64,6 @@ Mesh meshCopy(Mesh & mesh) {
         Edge * currEdge = firstEdge;
         Edge * nextEdge;
         Vertex * tempv;
-        vector<Vertex*> vertices;
         vertices.clear();
         do {
             if(tempFace == currEdge -> fa) {
@@ -78,7 +81,7 @@ Mesh meshCopy(Mesh & mesh) {
             vertices.push_back(newMesh.vertList[tempv -> ID]);
             currEdge = nextEdge;
         } while (currEdge != firstEdge);
-        cout<<"Here"<<endl;
+        vector<Vertex*>::iterator vtIt;
         newMesh.addPolygonFace(vertices);
     }
     newMesh.object2world = mesh.object2world;
