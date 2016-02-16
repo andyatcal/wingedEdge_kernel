@@ -66,8 +66,8 @@ public:
     vector<Edge*> boundaryEdgeList();
 };
 
-Mesh::Mesh(){
-	object2world = mat4(1);
+Mesh::Mesh() {
+    object2world = mat4(1);
 }
 
 void Mesh::addVertex(Vertex * v) {
