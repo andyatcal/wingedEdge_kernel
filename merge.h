@@ -10,6 +10,8 @@
 
 #include <vector>
 #include <unordered_map>
+#include <set>
+#include <queue>
 
 using namespace std;
 using namespace glm;
@@ -34,8 +36,10 @@ bool vertexMatch(Vertex * v1, Vertex * v2) {
 // @param mesh1, mesh2. The two meshes to be merged.
 // Return a new mesh that contains the merged mesh.
 Mesh merge(Mesh & mesh1, Mesh & mesh2) {
+    unordered_map<Vertex*, set<Vertex*> > map;
+    unordered_map<Vertex*, set<Vertex*> > rmap;
     unordered_map<Vertex*, Vertex*> replacingMap;
-    unordered_map<Vertex*, Vertex*>::iterator mIt;
+    unordered_map<Vertex*, set<Vertex*> >::iterator mIt;
     vector<Edge*> boundaryEdgeList1 = mesh1.boundaryEdgeList();
     vector<Edge*> boundaryEdgeList2 = mesh2.boundaryEdgeList();
     //cout<<boundaryEdgeList1.size()<<endl;
@@ -47,48 +51,162 @@ Mesh merge(Mesh & mesh1, Mesh & mesh2) {
             if(vertexMatch((*eIt1) -> va, (*eIt2) -> vb) 
                 && vertexMatch((*eIt1) -> vb, (*eIt2) -> va)) {
                 //cout<<"Hey, I find a normal replacing"<<endl;
-                replacingMap[(*eIt2) -> vb] = (*eIt1) -> va;
-                replacingMap[(*eIt2) -> va] = (*eIt1) -> vb;
+                //cout<<(*eIt1) -> va -> ID<<" matching with "<<(*eIt2) -> vb -> ID<<endl;
+                //cout<<(*eIt1) -> vb -> ID<<" matching with "<<(*eIt2) -> va -> ID<<endl;
+                mIt = map.find((*eIt1) -> va);
+                if(mIt == map.end()) {
+                    set<Vertex*> newSet;
+                    map[(*eIt1) -> va] = newSet;
+                }
+                map[(*eIt1) -> va].insert((*eIt2) -> vb);
+                mIt = map.find((*eIt1) -> vb);
+                if(mIt == map.end()) {
+                    set<Vertex*> newSet;
+                    map[(*eIt1) -> vb] = newSet;
+                }
+                map[(*eIt1) -> vb].insert((*eIt2) -> va);
+                mIt = rmap.find((*eIt2) -> va);
+                if(mIt == rmap.end()) {
+                    set<Vertex*> newSet;
+                    rmap[(*eIt2) -> va] = newSet;
+                }
+                rmap[(*eIt2) -> va].insert((*eIt1) -> vb);
+                mIt = rmap.find((*eIt2) -> vb);
+                if(mIt == rmap.end()) {
+                    set<Vertex*> newSet;
+                    rmap[(*eIt2) -> vb] = newSet;
+                }
+                rmap[(*eIt2) -> vb].insert((*eIt1) -> va);
             } else if(vertexMatch((*eIt1) -> va, (*eIt2) -> va)
              && vertexMatch((*eIt1) -> vb, (*eIt2) -> vb)) {
                 //cout<<"Hey, I find a mobius replacing"<<endl;
-                replacingMap[(*eIt2) -> va] = (*eIt1) -> va;
-                replacingMap[(*eIt2) -> vb] = (*eIt1) -> vb;
+                //cout<<(*eIt1) -> va -> ID<<" matching with "<<(*eIt2) -> va -> ID<<endl;
+                //cout<<(*eIt1) -> vb -> ID<<" matching with "<<(*eIt2) -> vb -> ID<<endl;
+                mIt = map.find((*eIt1) -> va);
+                if(mIt == map.end()) {
+                    set<Vertex*> newSet;
+                    map[(*eIt1) -> va] = newSet;
+                }
+                map[(*eIt1) -> va].insert((*eIt2) -> va);
+                mIt = map.find((*eIt1) -> vb);
+                if(mIt == map.end()) {
+                    set<Vertex*> newSet;
+                    map[(*eIt1) -> vb] = newSet;
+                }
+                map[(*eIt1) -> vb].insert((*eIt2) -> vb);
+                mIt = rmap.find((*eIt2) -> va);
+                if(mIt == rmap.end()) {
+                    set<Vertex*> newSet;
+                    rmap[(*eIt2) -> va] = newSet;
+                }
+                rmap[(*eIt2) -> va].insert((*eIt1) -> va);
+                mIt = rmap.find((*eIt2) -> vb);
+                if(mIt == rmap.end()) {
+                    set<Vertex*> newSet;
+                    rmap[(*eIt2) -> vb] = newSet;
+                }
+                rmap[(*eIt2) -> vb].insert((*eIt1) -> vb);
             }
         }
     }
+
+    int counter = 0;
+    set<Vertex*>::iterator sIt;
+    set<Vertex*>::iterator siIt;
+    set<Vertex*> vertices;
+    set<Vertex*> verticesInner;
+    Vertex * key;
+    unordered_map<Vertex*, set<Vertex*> > tempMap1;
+    while(map.size() != 0) {
+        mIt = map.begin();
+        queue<Vertex*> currQueue;
+        key = mIt -> first;
+        set<Vertex*> values;
+        //cout<<"Key: "<< mIt -> first -> ID<<" mapped to ";
+        currQueue.push(mIt ->first);
+        while(!currQueue.empty()) {
+            Vertex * curr = currQueue.front();
+            currQueue.pop();
+            mIt = map.find(curr);
+            if(mIt != map.end()) {
+                vertices = mIt -> second;
+                values.insert(curr);
+                map.erase(mIt);
+                for(sIt = vertices.begin(); sIt != vertices.end(); sIt++) {
+                    mIt = rmap.find(*sIt);
+                    verticesInner = mIt -> second;
+                    values.insert(mIt -> first);
+                    for(siIt = verticesInner.begin(); siIt != verticesInner.end(); siIt++) {
+                        mIt = map.find(*siIt);
+                        if(mIt != map.end()) {
+                            currQueue.push(mIt -> first);
+                        }
+                    }
+                }
+            }
+            tempMap1[key] = values;
+        }
+        //for(sIt = vertices.begin(); sIt != vertices.end(); sIt++) {
+        //    cout<<(*sIt) -> ID<<" ";
+        //}
+        //cout<<endl;
+    }
+    // Reverse the map
+    for(mIt = tempMap1.begin(); mIt != tempMap1.end(); mIt++) {
+        for(sIt = (mIt -> second).begin(); sIt != (mIt -> second).end(); sIt++) {
+            if((*sIt) != (mIt -> first)) {
+                //cout<<"Mapping "<<(*sIt) -> ID<<" to "<<mIt -> first -> ID<<endl;
+                replacingMap[*sIt] = mIt -> first;
+            }
+        }
+    }
+
+    // Create new vertices for the merged mesh and generate links.
+    //cout<<"I am here!"<<endl;
     Mesh mergedMesh;
     vector<Vertex*>::iterator vIt;
     vector<Face*>::iterator fIt;
+    unordered_map<Vertex*, Vertex*>::iterator merIt;
     unordered_map<Vertex*, Vertex*> mergeMap;
-    for(vIt = mesh1.vertList.begin(); vIt < mesh1.vertList.end(); vIt ++) {
-        Vertex * v = new Vertex;
-        v -> position = (*vIt) -> position;
-        v -> ID = mergedMesh.vertList.size();
-        mergeMap[*vIt] = v;
-        //cout<<"mergeMap[v"<<(*vIt) -> ID<<"] = v"<<v -> ID<<endl;
-        mergedMesh.vertList.push_back(v);
-    }
-    for(vIt = mesh2.vertList.begin(); vIt < mesh2.vertList.end(); vIt ++) {
-        mIt = replacingMap.find(*vIt);
-        if(mIt == replacingMap.end()) {
+    unordered_map<Vertex*, Vertex*> tempMap;
+    for(vIt = mesh1.vertList.begin(); vIt < mesh1.vertList.end(); vIt++) {
+        merIt = replacingMap.find(*vIt);
+        if(merIt == replacingMap.end()) {
             Vertex * v = new Vertex;
             v -> position = (*vIt) -> position;
             v -> ID = mergedMesh.vertList.size();
             mergeMap[*vIt] = v;
-            //cout<<"mergeMap[v"<<(*vIt) -> ID<<"] = v"<<v -> ID<<endl;
             mergedMesh.vertList.push_back(v);
-        } else {
-            mergeMap[*vIt] = mergeMap[replacingMap[*vIt]];
-            //cout<<"mergeMap[v"<<(*vIt) -> ID<<"] = v"<<mergeMap[replacingMap[*vIt]] -> ID<<endl;
         }
     }
-    for(fIt = mesh1.faceList.begin(); fIt < mesh1.faceList.end(); fIt ++) {
+    for(vIt = mesh1.vertList.begin(); vIt < mesh1.vertList.end(); vIt++) {
+        merIt = replacingMap.find(*vIt);
+        if(merIt != replacingMap.end()) {
+            mergeMap[*vIt] = mergeMap[replacingMap[*vIt]];
+        }
+    }
+    //cout<<"And here!"<<endl;
+    for(vIt = mesh2.vertList.begin(); vIt < mesh2.vertList.end(); vIt++) {
+        merIt = replacingMap.find(*vIt);
+        if(merIt == replacingMap.end()) {
+            Vertex * v = new Vertex;
+            v -> position = (*vIt) -> position;
+            v -> ID = mergedMesh.vertList.size();
+            mergeMap[*vIt] = v;
+            mergedMesh.vertList.push_back(v);
+        }
+    }
+    for(vIt = mesh2.vertList.begin(); vIt < mesh2.vertList.end(); vIt++) {
+        merIt = replacingMap.find(*vIt);
+        if(merIt != replacingMap.end()) {
+            mergeMap[*vIt] = mergeMap[replacingMap[*vIt]];
+        }
+    }
+    for(fIt = mesh1.faceList.begin(); fIt < mesh1.faceList.end(); fIt++) {
         Edge * firstEdge = (*fIt) -> oneEdge;
         Edge * currEdge = firstEdge;
         Edge * nextEdge;
         vector<Vertex*> vertices;
-        //vertices.clear();
         do{
             if(currEdge -> fa == (*fIt)) {
                 vertices.push_back(mergeMap[currEdge -> vb]);
@@ -106,12 +224,11 @@ Mesh merge(Mesh & mesh1, Mesh & mesh2) {
         } while(currEdge != firstEdge);
         mergedMesh.addPolygonFace(vertices);
     }
-    for(fIt = mesh2.faceList.begin(); fIt < mesh2.faceList.end(); fIt ++) {
+    for(fIt = mesh2.faceList.begin(); fIt < mesh2.faceList.end(); fIt++) {
         Edge * firstEdge = (*fIt) -> oneEdge;
         Edge * currEdge = firstEdge;
         Edge * nextEdge;
         vector<Vertex*> vertices;
-        //vertices.clear();
         do{
             if(currEdge -> fa == (*fIt)) {
                 vertices.push_back(mergeMap[currEdge -> vb]);
@@ -129,6 +246,7 @@ Mesh merge(Mesh & mesh1, Mesh & mesh2) {
         } while(currEdge != firstEdge);
         mergedMesh.addPolygonFace(vertices);
     }
+
     mergedMesh.buildBoundary();
     return mergedMesh;
 }
@@ -137,78 +255,12 @@ Mesh merge(Mesh & mesh1, Mesh & mesh2) {
 // @param meshes. The list of meshes to be merged.
 // All facets and vertices of mesh2 will be added to mesh1.
 // Return a new mesh that contains the merged mesh.
-Mesh merge(vector<Mesh*> &meshes) {
-    unordered_map<Vertex*, Vertex*> replacingMap;
+Mesh merge(vector<Mesh> &meshes) {
     Mesh mergedMesh;
-    return mergedMesh;
-}
-
-// Merge any possible boundary edges that are close for one mesh.
-// @param mesh, the mesh of self-merege
-Mesh merge(Mesh & mesh) {
-    unordered_map<Vertex*, Vertex*> replacingMap;
-    unordered_map<Vertex*, Vertex*>::iterator mIt;
-    vector<Edge*> boundaryEdgeList = mesh.boundaryEdgeList();
-    //cout<<boundaryEdgeList.size()<<endl;
-    vector<Edge*>::iterator eIt1;
-    vector<Edge*>::iterator eIt2;
-    for(eIt1 = boundaryEdgeList.begin(); eIt1 < boundaryEdgeList.end(); eIt1 ++) {
-        for(eIt2 = eIt1 + 1; eIt2 < boundaryEdgeList.end(); eIt2 ++) {
-            if(vertexMatch((*eIt1) -> va, (*eIt2) -> vb) 
-                && vertexMatch((*eIt1) -> vb, (*eIt2) -> va)) {
-                //cout<<"Hey, I find a normal replacing"<<endl;
-                replacingMap[(*eIt2) -> vb] = (*eIt1) -> va;
-                replacingMap[(*eIt2) -> va] = (*eIt1) -> vb;
-            } else if(vertexMatch((*eIt1) -> va, (*eIt2) -> va)
-             && vertexMatch((*eIt1) -> vb, (*eIt2) -> vb)) {
-                //cout<<"Hey, I find a mobius replacing"<<endl;
-                replacingMap[(*eIt2) -> va] = (*eIt1) -> va;
-                replacingMap[(*eIt2) -> vb] = (*eIt1) -> vb;
-            }
-        }
+    vector<Mesh>::iterator meshIt;
+    for(meshIt = meshes.begin(); meshIt < meshes.end(); meshIt++) {
+        mergedMesh = merge(mergedMesh, *meshIt);
     }
-    Mesh mergedMesh;
-    vector<Vertex*>::iterator vIt;
-    vector<Face*>::iterator fIt;
-    unordered_map<Vertex*, Vertex*> mergeMap;
-    for(vIt = mesh.vertList.begin(); vIt < mesh.vertList.end(); vIt ++) {
-        mIt = replacingMap.find(*vIt);
-        if(mIt == replacingMap.end()) {
-            Vertex * v = new Vertex;
-            v -> position = (*vIt) -> position;
-            v -> ID = mergedMesh.vertList.size();
-            mergeMap[*vIt] = v;
-            //cout<<"mergeMap[v"<<(*vIt) -> ID<<"] = v"<<v -> ID<<endl;
-            mergedMesh.vertList.push_back(v);
-        } else {
-            mergeMap[*vIt] = mergeMap[replacingMap[*vIt]];
-            //cout<<"mergeMap[v"<<(*vIt) -> ID<<"] = v"<<mergeMap[replacingMap[*vIt]] -> ID<<endl;
-        }
-    }
-    for(fIt = mesh.faceList.begin(); fIt < mesh.faceList.end(); fIt ++) {
-        Edge * firstEdge = (*fIt) -> oneEdge;
-        Edge * currEdge = firstEdge;
-        Edge * nextEdge;
-        vector<Vertex*> vertices;
-        //vertices.clear();
-        do{
-            if(currEdge -> fa == (*fIt)) {
-                vertices.push_back(mergeMap[currEdge -> vb]);
-                nextEdge = currEdge -> nextVbFa;
-            } else{
-                if(currEdge -> mobius) {
-                    vertices.push_back(mergeMap[currEdge -> vb]);
-                    nextEdge = currEdge -> nextVbFb;
-                } else {
-                    vertices.push_back(mergeMap[currEdge -> va]);
-                    nextEdge = currEdge -> nextVaFb;
-                }
-            }
-            currEdge = nextEdge;
-        } while(currEdge != firstEdge);
-        mergedMesh.addPolygonFace(vertices);
-    }
-    mergedMesh.buildBoundary();
     return mergedMesh;
 }
 

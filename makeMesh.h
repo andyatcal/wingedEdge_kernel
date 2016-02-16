@@ -133,14 +133,6 @@ Mesh mergeTwoMeshes2() {
     Vertex * v2 = new Vertex;
     Vertex * v3 = new Vertex;
     Vertex * v4 = new Vertex;
-    Vertex * v5 = new Vertex;
-    Vertex * v6 = new Vertex;
-    Vertex * v7 = new Vertex;
-    Vertex * v8 = new Vertex;
-    Vertex * v9 = new Vertex;
-    Vertex * v10 = new Vertex;
-    Vertex * v11 = new Vertex;
-    Vertex * v12 = new Vertex;
 
     v1 -> position = vec3(1, 1, 0);
     v2 -> position = vec3(-1, 1, 0);
@@ -167,13 +159,435 @@ Mesh mergeTwoMeshes2() {
     mesh1.buildBoundary();
 
     mesh2 = meshCopy(mesh1);
-    mat4 translate = ktranslate(vec3(0, -1, 0));
-    transform(mesh2, translate);
+    mat4 rot = krotate(vec3(0, 1, 1), PI);
+    //mat4 translate = ktranslate(vec3(0, -1, 0));
+    //transform(mesh2, translate);
+    transform(mesh2, rot);
+    Mesh merged = merge(mesh1, mesh2);
+    return merged;
+}
+
+Mesh mergeTwoMeshes3() {
+    //make new mesh
+    Mesh mesh1;
+    Mesh mesh2;
+    Vertex * v1 = new Vertex;
+    Vertex * v2 = new Vertex;
+    Vertex * v3 = new Vertex;
+
+
+    v1 -> position = vec3(0, 0, 0);
+    v2 -> position = vec3(1, 0, 0);
+    v3 -> position = vec3(0.5, 0.866, 0);
+
+    v1 -> ID = 0;
+    v2 -> ID = 1;
+    v3 -> ID = 2;
+    
+    mesh1.addVertex(v1);
+    mesh1.addVertex(v2);
+    mesh1.addVertex(v3);
+
+    vector<Vertex*> topFace;
+    topFace.push_back(v1);
+    topFace.push_back(v2);
+    topFace.push_back(v3);
+
+    mesh1.addPolygonFace(topFace, true);
+    mesh1.buildBoundary();
+
+    mesh2 = meshCopy(mesh1);
+    mat4 rot = krotate(vec3(0, 0, 1), PI/3);
+    transform(mesh2, rot);
 
     Mesh merged = merge(mesh1, mesh2);
     return merged;
 }
 
+Mesh mergeTwoMeshes8() {
+    //make new mesh
+    Mesh mesh1;
+    Mesh mesh2;
+    Mesh mesh3;
+
+    Vertex * v1 = new Vertex;
+    Vertex * v2 = new Vertex;
+    Vertex * v3 = new Vertex;
+
+    v1 -> position = vec3(0, 0, 0);
+    v2 -> position = vec3(1, 0, 0);
+    v3 -> position = vec3(0.5, 0.866, 0);
+
+    v1 -> ID = 0;
+    v2 -> ID = 1;
+    v3 -> ID = 2;
+    
+    mesh1.addVertex(v1);
+    mesh1.addVertex(v2);
+    mesh1.addVertex(v3);
+
+    vector<Vertex*> topFace;
+    topFace.push_back(v1);
+    topFace.push_back(v2);
+    topFace.push_back(v3);
+
+    mesh1.addPolygonFace(topFace, true);
+
+    mat4 rot1 = krotate(vec3(0,0,1), PI / 3);
+    mat4 rot2 = krotate(vec3(0,0,1), PI * 2 / 3);
+    mat4 rot3 = krotate(vec3(0,0,1), PI);
+    mesh2 = meshCopy(mesh1);
+    mesh3 = meshCopy(mesh1);
+    mat4 mirror = kmirror(vec4(0, 1, 0, 0));
+    transform(mesh2, rot1);
+    transform(mesh3, mirror);
+    Mesh merged = merge(mesh1, mesh2);
+    //merged = merge(merged, mesh3);
+    Mesh mesh5 = meshCopy(mesh3);
+    transform(mesh5, rot3);
+    Mesh merged2 = merge(mesh3, mesh5);
+    Mesh mesh4 = meshCopy(merged);
+    transform(mesh4, rot3);
+    merged = merge(merged, mesh4);
+    merged = merge(merged, merged2);
+    return merged;
+}
+
+Mesh mergeTwoMeshes4() {
+    //make new mesh
+    Mesh mesh1;
+    Mesh mesh2;
+    Mesh mesh3;
+
+    Vertex * v1 = new Vertex;
+    Vertex * v2 = new Vertex;
+    Vertex * v3 = new Vertex;
+
+    v1 -> position = vec3(0, 0, 0);
+    v2 -> position = vec3(1, 0, 0);
+    v3 -> position = vec3(0.5, 0.866, 0);
+
+    v1 -> ID = 0;
+    v2 -> ID = 1;
+    v3 -> ID = 2;
+    
+    mesh1.addVertex(v1);
+    mesh1.addVertex(v2);
+    mesh1.addVertex(v3);
+
+    vector<Vertex*> topFace;
+    topFace.push_back(v1);
+    topFace.push_back(v2);
+    topFace.push_back(v3);
+
+    mesh1.addPolygonFace(topFace, true);
+
+    mat4 rot1 = krotate(vec3(0,0,1), PI / 3);
+    mat4 rot2 = krotate(vec3(0,0,1), PI * 2 / 3);
+    mat4 rot3 = krotate(vec3(0,0,1), PI);
+    mesh2 = meshCopy(mesh1);
+    mesh3 = meshCopy(mesh1);
+    mat4 mirror = kmirror(vec4(0, 1, 0, 0));
+    transform(mesh2, rot1);
+    transform(mesh3, mirror);
+    vector<Mesh> meshes;
+    meshes.push_back(mesh1);
+    meshes.push_back(mesh2);
+    meshes.push_back(mesh3);
+    Mesh merged = merge(meshes);
+    //merged = merge(merged, mesh3);
+    //Mesh mesh5 = meshCopy(mesh3);
+    //transform(mesh5, rot3);
+    //Mesh merged2 = merge(mesh3, mesh5);
+    //Mesh mesh4 = meshCopy(merged);
+    //transform(mesh4, rot3);
+    //merged = merge(merged, mesh4);
+    //merged = merge(merged, merged2);
+    return merged;
+}
+
+Mesh mergeTwoMeshes7() {
+    //make new mesh
+    Mesh mesh1;
+    Mesh mesh2;
+    Mesh mesh3;
+
+    Vertex * v1 = new Vertex;
+    Vertex * v2 = new Vertex;
+    Vertex * v3 = new Vertex;
+
+    v1 -> position = vec3(0, 0, 0);
+    v2 -> position = vec3(1, 0, 0);
+    v3 -> position = vec3(0.5, 0.866, 0);
+
+    v1 -> ID = 0;
+    v2 -> ID = 1;
+    v3 -> ID = 2;
+    
+    mesh1.addVertex(v1);
+    mesh1.addVertex(v2);
+    mesh1.addVertex(v3);
+
+    vector<Vertex*> topFace;
+    topFace.push_back(v1);
+    topFace.push_back(v2);
+    topFace.push_back(v3);
+
+    mesh1.addPolygonFace(topFace, true);
+
+    mat4 rot1 = krotate(vec3(0,0,1), PI * 2 / 3);
+    mat4 rot2 = krotate(vec3(0,0,1), - PI * 2 / 3);
+
+    mesh2 = meshCopy(mesh1);
+    mesh3 = meshCopy(mesh1);
+
+    transform(mesh2, rot1);
+    transform(mesh3, rot2);
+    
+    Mesh merged = merge(mesh1, mesh2);
+    //merged = merge(merged, mesh3);
+
+    mat4 rot3 = krotate(vec3(0,0,1), PI /3);
+    Mesh mesh4 = meshCopy(merged);
+    transform(mesh4, rot3);
+    merged = merge(merged, mesh4);
+    return merged;
+}
+
+Mesh mergeTwoMeshes6() {
+    //make new mesh
+    Mesh mesh1;
+    Mesh mesh2;
+
+    Vertex * v1 = new Vertex;
+    Vertex * v2 = new Vertex;
+    Vertex * v3 = new Vertex;
+    Vertex * v4 = new Vertex;
+    Vertex * v5 = new Vertex;
+    Vertex * v6 = new Vertex;
+    Vertex * v7 = new Vertex;
+    Vertex * v8 = new Vertex;
+    Vertex * v9 = new Vertex;
+    Vertex * v10 = new Vertex;
+    Vertex * v11 = new Vertex;
+    Vertex * v12 = new Vertex;
+    Vertex * v13 = new Vertex;
+    Vertex * v14 = new Vertex;
+    Vertex * v15 = new Vertex;
+    Vertex * v16 = new Vertex;
+    Vertex * v17 = new Vertex;
+    Vertex * v18 = new Vertex;
+
+    v1 -> position = vec3(0, 0, 0);
+    v2 -> position = vec3(1, 0, 0);
+    v3 -> position = vec3(0.5, 0.866, 0);
+
+    v1 -> ID = 0;
+    v2 -> ID = 1;
+    v3 -> ID = 2;
+    
+    mesh1.addVertex(v1);
+    mesh1.addVertex(v2);
+    mesh1.addVertex(v3);
+    
+    mesh1.addVertex(v4);
+    mesh1.addVertex(v5);
+    mesh1.addVertex(v6);
+
+    mesh1.addVertex(v7);
+    mesh1.addVertex(v8);
+    mesh1.addVertex(v9);
+
+    vector<Vertex*> topFace;
+    topFace.push_back(v1);
+    topFace.push_back(v2);
+    topFace.push_back(v3);
+
+    mesh1.addPolygonFace(topFace, true);
+
+    v4 -> position = vec3(0, 0, 0);
+    v5 -> position = vec3(-0.5, 0.866, 0);
+    v6 -> position = vec3(-1, 0, 0);
+
+    v4 -> ID = 3;
+    v5 -> ID = 4;
+    v6 -> ID = 5;
+
+    topFace.clear();
+    topFace.push_back(v4);
+    topFace.push_back(v5);
+    topFace.push_back(v6);
+
+    mesh1.addPolygonFace(topFace, true);
+
+    v7 -> position = vec3(0, 0, 0);
+    v8 -> position = vec3(-0.5, -0.866, 0);
+    v9 -> position = vec3(0.5, -0.866, 0);
+
+    v7 -> ID = 6;
+    v8 -> ID = 7;
+    v9 -> ID = 8;
+    
+    topFace.clear();
+    topFace.push_back(v7);
+    topFace.push_back(v8);
+    topFace.push_back(v9);
+
+    mesh1.addPolygonFace(topFace, true);
+    mesh1.buildBoundary();
+
+    v10 -> position = vec3(0, 0, 0);
+    v11 -> position = vec3(0.5, 0.866, 0);
+    v12 -> position = vec3(-0.5, 0.866, 0);
+
+    v10 -> ID = 9;
+    v11 -> ID = 10;
+    v12 -> ID = 11;
+    
+    mesh2.addVertex(v10);
+    mesh2.addVertex(v11);
+    mesh2.addVertex(v12);
+
+    topFace.clear();
+    topFace.push_back(v10);
+    topFace.push_back(v11);
+    topFace.push_back(v12);
+
+    mesh2.addPolygonFace(topFace, true);
+
+    v13 -> position = vec3(0, 0, 0);
+    v14 -> position = vec3(-1, 0, 0);
+    v15 -> position = vec3(-0.5, -0.866, 0);
+
+    v13 -> ID = 12;
+    v14 -> ID = 13;
+    v15 -> ID = 14;
+    
+    mesh2.addVertex(v13);
+    mesh2.addVertex(v14);
+    mesh2.addVertex(v15);
+
+    topFace.clear();
+    topFace.push_back(v13);
+    topFace.push_back(v14);
+    topFace.push_back(v15);
+
+    mesh2.addPolygonFace(topFace, true);
+
+    v16 -> position = vec3(0, 0, 0);
+    v17 -> position = vec3(0.5, -0.866, 0);
+    v18 -> position = vec3(1, 0, 0);
+
+    v16 -> ID = 15;
+    v17 -> ID = 16;
+    v18 -> ID = 17;
+    
+    mesh2.addVertex(v16);
+    mesh2.addVertex(v17);
+    mesh2.addVertex(v18);
+
+    topFace.clear();
+    topFace.push_back(v16);
+    topFace.push_back(v17);
+    topFace.push_back(v18);
+
+    mesh2.addPolygonFace(topFace, true);
+    mesh2.buildBoundary();
+    
+    Mesh merged = merge(mesh1, mesh2);
+    return merged;
+}
+
+Mesh mergeTwoMeshes5() {
+    //make new mesh
+    Mesh mesh1;
+    Mesh mesh2;
+    Vertex * v1 = new Vertex;
+    Vertex * v2 = new Vertex;
+    Vertex * v3 = new Vertex;
+
+
+    v1 -> position = vec3(0, 0, 0);
+    v2 -> position = vec3(1, 0, 0);
+    v3 -> position = vec3(0.5, 0.866, 0);
+
+    v1 -> ID = 0;
+    v2 -> ID = 1;
+    v3 -> ID = 2;
+    
+    mesh1.addVertex(v1);
+    mesh1.addVertex(v2);
+    mesh1.addVertex(v3);
+
+    vector<Vertex*> topFace;
+    topFace.push_back(v1);
+    topFace.push_back(v2);
+    topFace.push_back(v3);
+
+    mesh1.addPolygonFace(topFace, true);
+    mesh1.buildBoundary();
+
+    mesh2 = meshCopy(mesh1);
+    mat4 rot = krotate(vec3(0, 0, 1), PI/3);
+    transform(mesh2, rot);
+
+    Mesh merged = merge(mesh1, mesh2);
+    mat4 rot2 = krotate(vec3(0, 0, 1), PI * 2 / 3);
+    Mesh mesh3 = meshCopy(merged);
+    Mesh mesh4 = meshCopy(merged);
+    transform(mesh3, rot2);
+    transform(mesh4, rot2);
+    transform(mesh4, rot2);
+    merged = merge(mesh3, merged);
+    merged = merge(mesh4, merged);
+    return merged;
+}
+
+Mesh mirrorTest() {
+    //make new mesh
+    Mesh mesh1;
+    Mesh mesh2;
+    Vertex * v1 = new Vertex;
+    Vertex * v2 = new Vertex;
+    Vertex * v3 = new Vertex;
+
+
+    v1 -> position = vec3(0, 0, 0);
+    v2 -> position = vec3(1, 0, 0);
+    v3 -> position = vec3(0.5, 0.866, 0);
+
+    v1 -> ID = 0;
+    v2 -> ID = 1;
+    v3 -> ID = 2;
+
+    mesh1.addVertex(v1);
+    mesh1.addVertex(v2);
+    mesh1.addVertex(v3);
+
+    vector<Vertex*> topFace;
+    topFace.push_back(v1);
+    topFace.push_back(v2);
+    topFace.push_back(v3);
+
+    mesh1.addPolygonFace(topFace, true);
+    mesh1.buildBoundary();
+
+    //Set the mirror plane here.
+
+    vec4 mirror_plane = vec4(0, 1, 1, 0);
+    mat4 mirror = kmirror(mirror_plane);
+    // Interesting, the glm implements the translation differently.
+    //mat4 mirror = translate(vec3(-2, 0, 0));
+    //cout<<mirror[0][0]<<" "<<mirror[0][1]<<" "<<mirror[0][2]<<" "<<mirror[0][3]<<endl;
+    //cout<<mirror[1][0]<<" "<<mirror[1][1]<<" "<<mirror[1][2]<<" "<<mirror[1][3]<<endl;
+    //cout<<mirror[2][0]<<" "<<mirror[2][1]<<" "<<mirror[2][2]<<" "<<mirror[2][3]<<endl;
+    //cout<<mirror[3][0]<<" "<<mirror[3][1]<<" "<<mirror[3][2]<<" "<<mirror[3][3]<<endl;
+    mesh2 = meshCopy(mesh1);
+    transform(mesh2, mirror);
+
+    Mesh merged = merge(mesh1, mesh2);
+    return merged;
+}
 
 void makePyramid(Mesh &mesh){
     //make new mesh
@@ -227,9 +641,9 @@ void makePyramid(Mesh &mesh){
     mesh.addTriFace(v1, v4, v5);
     //toprightFace
     mesh.addTriFace(v1, v5, v2);
-    cout<<mesh.faceList.size()<<endl;
-    cout<<mesh.vertList.size()<<endl;
-    cout<<mesh.edgeTable.size()<<endl;
+    //cout<<mesh.faceList.size()<<endl;
+    //cout<<mesh.vertList.size()<<endl;
+    //cout<<mesh.edgeTable.size()<<endl;
     mesh.buildBoundary();
 }
 
