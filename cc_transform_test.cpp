@@ -56,6 +56,7 @@ GLfloat CYAN[] = {.0f, .8f, 0.8f, 1.f};
 #include "transformation.h"
 #include "viewport.h"
 #include "makeMesh.h"
+#include "group.h"
 #include "offset.h"
 #include "stl.h"
 
