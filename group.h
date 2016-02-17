@@ -32,6 +32,7 @@ public:
     void removeMesh(Mesh* mesh);
     // add subgroup for this Group
     void addSubGroup(Group* group, mat4 transformation);
+    // Remove 
     // A group is a collection of mesh pointers and the transformations
     // for each one of them.
     unordered_map<Mesh*, mat4> meshes;
@@ -39,6 +40,7 @@ public:
     // hirachinal scene.
     unordered_map<Group*, mat4> subgroups;
     // It can also have a special color of this group;
+    vec3 color;
 };
 
 Group::Group() {}
@@ -49,6 +51,14 @@ void Group::addMesh(Mesh* mesh, mat4 transformation) {
 
 void Group::removeMesh(Mesh* mesh) {
     meshes.erase(mesh);
+}
+
+void Group::addSubGroup(Group* group, mat4 transformation) {
+    subgroups[group] = transformation;
+}
+
+void Group::removeSubGroup(Group* group) {
+    subgroups.erase(group);
 }
 
     void addGroup(Group* group);

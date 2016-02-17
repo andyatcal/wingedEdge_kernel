@@ -56,7 +56,7 @@ GLfloat CYAN[] = {.0f, .8f, 0.8f, 1.f};
 #include "transformation.h"
 #include "viewport.h"
 #include "makeMesh.h"
-#include "group.h"
+//#include "group.h"
 #include "offset.h"
 #include "stl.h"
 
@@ -139,7 +139,8 @@ void init(int level){
     //makeSquare(master_mesh);
     //master_mesh = mergeTwoMeshes2();
     //master_mesh = mergeTwoMeshes3();
-    master_mesh = mergeTwoMeshes4();
+    //master_mesh = mergeTwoMeshes4();
+    master_mesh = mergeTwoMeshes7();
     //master_mesh = mergeTwoMeshes5();
     //master_mesh = mirrorTest();
     master_mesh.computeNormals();

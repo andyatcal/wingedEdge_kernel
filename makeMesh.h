@@ -337,18 +337,18 @@ Mesh mergeTwoMeshes7() {
 
     mat4 rot1 = krotate(vec3(0,0,1), PI * 2 / 3);
     mat4 rot2 = krotate(vec3(0,0,1), - PI * 2 / 3);
-
+    mat4 translation = ktranslate(vec3(-0.5, 0.866, 0));
     mesh2 = meshCopy(mesh1);
     mesh3 = meshCopy(mesh1);
 
     transform(mesh2, rot1);
-    transform(mesh3, rot2);
+    transform(mesh3, translation);
     
     Mesh merged = merge(mesh1, mesh2);
-    //merged = merge(merged, mesh3);
+    merged = merge(merged, mesh3);
 
     mat4 rot3 = krotate(vec3(0,0,1), PI /3);
-    Mesh mesh4 = meshCopy(merged);
+    Mesh mesh4 = meshCopy(mesh1);
     transform(mesh4, rot3);
     merged = merge(merged, mesh4);
     return merged;
