@@ -137,10 +137,10 @@ mat4 transforms[MODE_LAST];
 void init(int level){
     //makeMobius(master_mesh);
     //makeSquare(master_mesh);
-    //master_mesh = mergeTwoMeshes2();
+    master_mesh = mergeTwoMeshes2();
     //master_mesh = mergeTwoMeshes3();
     //master_mesh = mergeTwoMeshes4();
-    master_mesh = mergeTwoMeshes7();
+    //master_mesh = mergeTwoMeshes7();
     //master_mesh = mergeTwoMeshes5();
     //master_mesh = mirrorTest();
     master_mesh.computeNormals();

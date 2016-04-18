@@ -1,3 +1,4 @@
+
 // 
 // @author Andy Wang, UC Berkeley. Copyright 2015 reserve.
 // Catmull-Clark subdivision project in order to create sculptures like Eva-Hilds.
@@ -264,4 +265,4 @@ Mesh merge(vector<Mesh> &meshes) {
     return mergedMesh;
 }
 
-#endif // __MESH_H__
+#endif // __MERGE_H__

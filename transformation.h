@@ -9,7 +9,7 @@
 #define __TRANSFORMATION_H__
 
 #include <vector>
-#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/transform.hpp"
 #include "glm/gtc/constants.hpp"
 
 using namespace std;
@@ -29,7 +29,7 @@ void transform(Mesh & mesh, mat4 matrix) {
 }
 
 mat4 krotate(vec3 rot_axis, float radian) {
-    return rotate(radian, rot_axis);
+    return glm::rotate(radian, rot_axis);
 }
 
 mat4 kscale(vec3 scales) {

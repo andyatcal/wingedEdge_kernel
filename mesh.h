@@ -57,7 +57,7 @@ public:
     // @param vertices is a list of consequtive vertices of the face.
     void addPolygonFace(vector<Vertex*> vertices, bool reverseOrder);
     // Draw mesh in OpenGL
-    void drawMesh();
+    void drawMesh(int startIndex);
     // Build Boundary Pointers for Mesh.
     void buildBoundary();
     // Compute the vertex normals for every face and vertex of the mesh.
@@ -406,7 +406,7 @@ void getFaceNormal(Face * currFace){
 }
 
 // Get the vertex normal
-// @param currVert: pointer of the edge, which the vertex on the end of.
+// @param currVert: pointer of the vertex.
 void getVertexNormal(Vertex * currVert){
     Edge * firstEdge = currVert -> oneEdge;
     if(firstEdge == NULL) {
@@ -436,7 +436,7 @@ void getVertexNormal(Vertex * currVert){
             currFace = currEdge -> theOtherFace(currFace);
         }
         currEdge = currEdge -> nextEdge(currVert, currFace);
-    } while ( currEdge != firstEdge);
+    } while (currEdge != firstEdge);
     //if(currVert -> onMobius) {
     //cout<<"The value of avgNorm is :"<<avgNorm[0]<<" "<<avgNorm[1]<<" "<<avgNorm[2]<<endl;
     //cout<<"The position of this vertex is :"<<currVert -> position[0]<<" "<<currVert -> position[1]<<" "<<currVert -> position[2]<<endl;
@@ -473,7 +473,7 @@ vec3 getTriFaceNormal(Vertex * va, Vertex * vb, Vertex * vc){
     return normalize(vNormala + vNormalb + vNormalc);
 }
 
-void Mesh::drawMesh() {
+void Mesh::drawMesh(int startIndex) {
     Face * tempFace;
     vector<Face*>::iterator fIt;
     for(fIt = faceList.begin(); fIt < faceList.end(); fIt++) {
@@ -482,10 +482,7 @@ void Mesh::drawMesh() {
         Vertex * tempv;
         Edge * firstEdge = (*fIt) -> oneEdge;
         //cout<<"New Face: "<<endl;
-        glLoadName(tempFace -> id);
-        if(tempFace -> selected) {
-            glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, PURPLE);
-        }
+        glLoadName(tempFace -> id + startIndex);
         glBegin(GL_POLYGON);
         Edge * currEdge = firstEdge;
         Edge * nextEdge;

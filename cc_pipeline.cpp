@@ -49,6 +49,7 @@ GLfloat CYAN[] = {.0f, .8f, 0.8f, 1.f};
 #include "mesh.h"
 #include "merge.h"
 #include "zipper.h"
+#include "transformation.h"
 #include "makeMesh.h"
 #include "subdivision.h"
 #include "makePolyline.h"
@@ -153,7 +154,12 @@ void selectSinglePoint(GLint hits, GLuint *names,
         Vertex * selectedVertex;
         for (int i = 0; i < hits; i++) {
             int currentID = names[i * 4 + 3];
-            Face * workFace = master_mesh.faceList[currentID];
+            Face * workFace;
+            if(currentID < master_mesh.vertList.size()) {
+                workFace = master_mesh.faceList[currentID];
+            } else {
+                workFace = temp_mesh.faceList[currentID - master_mesh.vertList.size()];
+            }
             Edge * firstEdge = workFace -> oneEdge;
             Edge * currEdge = firstEdge;
             Edge * nextEdge;
@@ -793,10 +799,10 @@ void render(void) {
     //drawVertices();
     //glLoadName(INT_MAX);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, CYAN);
-    master_mesh.drawMesh();
+    master_mesh.drawMesh(0);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, PURPLE);
     if(!temp_mesh.vertList.empty()) {
-        temp_mesh.drawMesh();
+        temp_mesh.drawMesh(master_mesh.vertList.size());
     }
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, RED);
     glLineWidth(4.0);

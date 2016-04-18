@@ -22,7 +22,8 @@ class Scene{
 public:
     // Constructor.
     Scene();
-    // Add Group function.
+    // Add one group of drawing elements to this scene.
+    void addGroup();
     // The instances in this scene
 };
 

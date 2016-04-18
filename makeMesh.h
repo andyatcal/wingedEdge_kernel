@@ -159,14 +159,75 @@ Mesh mergeTwoMeshes2() {
     mesh1.buildBoundary();
 
     mesh2 = meshCopy(mesh1);
-    mat4 rot = krotate(vec3(0, 1, 1), PI);
-    //mat4 translate = ktranslate(vec3(0, -1, 0));
-    //transform(mesh2, translate);
-    transform(mesh2, rot);
+    //mat4 rot = krotate(vec3(0, 1, 1), PI);
+    mat4 translate = ktranslate(vec3(0, -1, 0));
+    transform(mesh2, translate);
+    //transform(mesh2, rot);
     Mesh merged = merge(mesh1, mesh2);
     return merged;
 }
 
+Mesh noMergeTwoMeshes2() {
+    //make new mesh
+    Mesh mesh1;
+    Mesh mesh2;
+    Vertex * v1 = new Vertex;
+    Vertex * v2 = new Vertex;
+    Vertex * v3 = new Vertex;
+    Vertex * v4 = new Vertex;
+    Vertex * v5 = new Vertex;
+    Vertex * v6 = new Vertex;
+    Vertex * v7 = new Vertex;
+    Vertex * v8 = new Vertex;
+    v1 -> position = vec3(1, 1, 0);
+    v2 -> position = vec3(-1, 1, 0);
+    v3 -> position = vec3(-1, 0, 0);
+    v4 -> position = vec3(1, 0, 0);
+    v5 -> position = vec3(1, 0, 0);
+    v6 -> position = vec3(-1, 0, 0);
+    v7 -> position = vec3(-1, -1, 0);
+    v8 -> position = vec3(1, -1, 0);
+    v1 -> ID = 0;
+    v2 -> ID = 1;
+    v3 -> ID = 2;
+    v4 -> ID = 3;
+    v5 -> ID = 4;
+    v6 -> ID = 5;
+    v7 -> ID = 6;
+    v8 -> ID = 7;    
+    mesh1.addVertex(v1);
+    mesh1.addVertex(v2);
+    mesh1.addVertex(v3);
+    mesh1.addVertex(v4);
+    mesh1.addVertex(v5);
+    mesh1.addVertex(v6);
+    mesh1.addVertex(v7);
+    mesh1.addVertex(v8);
+    vector<Vertex*> topFace;
+    topFace.push_back(v1);
+    topFace.push_back(v2);
+    topFace.push_back(v3);
+    topFace.push_back(v4);
+
+    mesh1.addPolygonFace(topFace, true);
+    topFace.clear();
+    topFace.push_back(v5);
+    topFace.push_back(v6);
+    topFace.push_back(v7);
+    topFace.push_back(v8);
+
+    mesh1.addPolygonFace(topFace, true);
+    mesh1.buildBoundary();
+
+    //mesh2 = meshCopy(mesh1);
+    //mat4 rot = krotate(vec3(0, 1, 1), PI);
+    //mat4 translate = ktranslate(vec3(0, -1, 0));
+    //transform(mesh2, translate);
+    //transform(mesh2, rot);
+    //Mesh merged = merge(mesh1, mesh2);
+    //return merged;
+    return mesh1;
+}
 Mesh mergeTwoMeshes3() {
     //make new mesh
     Mesh mesh1;

@@ -50,7 +50,7 @@ GLfloat CYAN[] = {.0f, .8f, 0.8f, 1.f};
 #include "mesh.h"
 #include "merge.h"
 #include "zipper.h"
-#include "makeMesh.h"
+//#include "makeMesh.h"
 #include "subdivision.h"
 #include "viewport.h"
 #include "offset.h"
@@ -127,7 +127,7 @@ void init(int level){
     //makePyramid(glMesh);
     //makeCube(glMesh, 1, 1, 1);
     //makeOpenCube(glMesh);
-    makeRing(glMesh);
+    //makeRing(glMesh);
     //makeOctahedron(glMesh);
     //makeSharpOctahedron(glMesh);
     //makeNormalStrip(glMesh);
@@ -163,7 +163,7 @@ void init(int level){
 
 void init(int level, string inputSIF){
     //makeWithSIF(glMesh, inputSIF);
-    makeWithQuadSIF(glMesh, inputSIF);
+    //makeWithQuadSIF(glMesh, inputSIF);
     Subdivision myCC(glMesh);
     glMesh = myCC.ccSubdivision(level);
     glMesh.computeNormals();
@@ -193,9 +193,9 @@ void init(int level, string inputSIF){
 }
 
 void initMerge(int level, string inputSIF1, string inputSIF2, string inputSIF3){
-    makeWithSIF(glMesh1, inputSIF1);
-    makeWithSIF(glMesh2, inputSIF2);
-    makeWithSIF(glMesh3, inputSIF3);
+    //makeWithSIF(glMesh1, inputSIF1);
+    //makeWithSIF(glMesh2, inputSIF2);
+    //makeWithSIF(glMesh3, inputSIF3);
     Mesh glMesh12;
     glMesh12 = merge(glMesh1, glMesh2);
     glMesh = merge(glMesh12, glMesh3);

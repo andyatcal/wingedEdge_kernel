@@ -36,23 +36,27 @@ GLfloat CYAN[] = {.0f, .8f, 0.8f, 1.f};
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/constants.hpp"
+#include "glm/gtx/string_cast.hpp"
 #include <iostream>
 #include <fstream>
 #include <regex>
 #include <string>
 #include <map>
 #include <unordered_map>
-
 #include "vertex.h"
 #include "edge.h"
 #include "face.h"
-
+#include "polyline.h"
 #include "mesh.h"
 #include "merge.h"
-
-#include "makeMesh.h"
+#include "zipper.h"
 #include "subdivision.h"
+#include "makePolyline.h"
+#include "transformation.h"
 #include "viewport.h"
+#include "makeMesh.h"
+//#include "group.h"
 #include "offset.h"
 #include "stl.h"
 
@@ -111,13 +115,13 @@ void init(int level, string inputSIF);
 void init(int level){
     //makeSquare(glMesh);
     //makePyramid(glMesh);
-    makeCube(glMesh, 1, 1, 1);
+    //makeCube(glMesh, 1, 1, 1);
     //makeOpenCube(glMesh);
     //makeRing(glMesh);
     //makeOctahedron(glMesh);
     //makeSharpOctahedron(glMesh);
     //makeNormalStrip(glMesh);
-    //makeMobius(glMesh);
+    makeMobius(glMesh);
     //makeCircleSweep(glMesh);
     //glMesh.computeNormals();
     //glMesh = mergeTwoMeshes1();
@@ -190,7 +194,7 @@ void initMerge(int level, string inputSIF1, string inputSIF2, string inputSIF3){
     
     Offset offset(glMesh, 0.0015);
     vector<Mesh> meshes;
-    bool full = true;
+    bool full = false;
     if(full) {
         offset.makeFullOffset();
         glOffMesh = offset.offsetMesh;
@@ -350,24 +354,25 @@ void render(void) {
     glMultMatrixf(&glMesh.object2world[0][0]);
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, CYAN);
-
+/*
     drawVertices();
     glLoadName(INT_MAX);
+
     glMesh.drawMesh();
 
-/*
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, GREEN);
     glPosMesh.drawMesh();
    
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, RED);
     glNegMesh.drawMesh();
-
+    */
+/*
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, CYAN);
     glSideMesh.drawMesh();
-
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, BLUE);
-    glOffMesh.drawMesh();
 */
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, RED);
+    glOffMesh.drawMesh();
+
     glutSwapBuffers();
 
 }

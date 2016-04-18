@@ -805,7 +805,7 @@ void render(void) {
     //drawVertices();
     //glLoadName(INT_MAX);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, CYAN);
-    master_mesh.drawMesh();
+    //master_mesh.drawMesh();
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, PURPLE);
     if(!temp_mesh.vertList.empty()) {
         temp_mesh.drawMesh();
@@ -822,9 +822,7 @@ void render(void) {
     if(border2) {
         border2 -> drawLine();
     }
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, YELLOW);
-    drawVertices();
-
+    
 /*
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, GREEN);
     glPosMesh.drawMesh();
@@ -1031,6 +1029,7 @@ void selectThisFace(GLint hits, GLuint *names)
 }
 
 void select(int x, int y) {
+
     GLuint buff[64] = {0};
     GLint hits, view[4];
     GLdouble modelview[16];
@@ -1045,6 +1044,7 @@ void select(int x, int y) {
     winX = (float)x;
     winY = (float)view[3] - (float)y;
     glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
+    cout<<winX<<" "<<winY<<" "<<winZ<<endl;
     gluUnProject( winX, winY, winZ, modelview, projection,
      view, &posX, &posY, &posZ);
     //cout<<"X: "<<posX<<" Y: "<<posY<<" Z: "<<posZ<<endl;

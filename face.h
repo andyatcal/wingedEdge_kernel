@@ -34,7 +34,6 @@ public:
     bool selected;
     // FaceID, should be an unique int
     int id;
-
 };
 
 Face::Face(){
